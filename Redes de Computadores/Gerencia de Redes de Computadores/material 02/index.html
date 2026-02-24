@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerência de Redes - Aula 02: Arquiteturas e Objetos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .page-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hidden-page {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .active-page {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step-dot.active {
+            background-color: #3b82f6;
+            width: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Estilos específicos para a impressão do PDF completo */
+        @media print {
+            .hidden-page {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+            .fixed, nav, #step-indicators, #prevBtn, #nextBtn, .no-print {
+                display: none !important;
+            }
+            main {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+            section {
+                page-break-after: always;
+                margin-bottom: 3rem !important;
+                padding-top: 2rem !important;
+            }
+            body {
+                background-color: white !important;
+            }
+            .print-logo {
+                display: block !important;
+            }
+        }
+
+        .oid-node:hover {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Top Navigation -->
+    <div class="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 z-50 px-4 py-3 no-print">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <!-- Meta Logo -->
+                <div class="flex items-center gap-2">
+                   <img src="Logo Centro Universitário META.png" alt="Logo META" class="h-10 w-auto object-contain">
+                    <div class="hidden lg:flex items-center border-l border-slate-300 pl-4 h-8">
+                    <span class="font-bold text-slate-800">
+                        Gerência de Redes de Computadores<span class="text-blue-600"> | Material 02</span>
+                    </span>
+                </div>
+                </div>
+            </div>
+            <div class="flex gap-1.5" id="step-indicators"></div>
+            <div class="text-xs font-black text-slate-500 bg-slate-100 px-3 py-1 rounded-full" id="page-counter">Pág 1/8</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto pt-24 pb-32 px-6">
+
+        <!-- PAGE 1: Contexto e Objetivos -->
+        <section id="page-1" class="page-transition active-page">
+            <div class="hidden print-logo mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl font-black text-slate-800 uppercase tracking-tighter">Gerência de Redes de Computadores<span class="text-blue-600"> | Material 02</span></span>
+                </div>
+                <div class="h-1 bg-blue-600 w-full mt-2"></div>
+            </div>
+
+            <div class="bg-white p-10 rounded-3xl border border-slate-200 shadow-xl">
+                <h1 class="text-4xl font-black text-slate-900 mb-6">Modelos de Gerência e Objetos</h1>
+                
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-blue-600 mb-4 flex items-center gap-2">
+                            <i data-lucide="history"></i> Recapitulação: FCAPS
+                        </h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                            Na última aula, entendemos que gerenciar uma rede envolve cinco áreas funcionais: <strong>F</strong>alhas, <strong>C</strong>onfiguração, <strong>C</strong>ontabilização, <strong>D</strong>esempenho (Performance) e <strong>S</strong>egurança. Mas como, tecnicamente, extraímos esses dados dos dispositivos?
+                        </p>
+                        <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-slate-300">
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Termo Técnico Chave</p>
+                            <p class="text-sm font-semibold italic text-slate-800">"Gerente vs. Agente": A relação fundamental para a monitoria.</p>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-8 rounded-2xl border border-blue-100">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <i data-lucide="target"></i> Objetivo do Dia
+                        </h3>
+                        <ul class="space-y-4">
+                            <li class="flex gap-3 text-sm text-slate-700">
+                                <i data-lucide="check-circle" class="text-blue-500 w-5 h-5 flex-shrink-0"></i>
+                                Diferenciar a arquitetura de gerência acadêmica (OSI) da arquitetura prática (TCP/IP).
+                            </li>
+                            <li class="flex gap-3 text-sm text-slate-700">
+                                <i data-lucide="check-circle" class="text-blue-500 w-5 h-5 flex-shrink-0"></i>
+                                Identificar o que pode ser monitorado em um ativo (Objetos Gerenciáveis).
+                            </li>
+                            <li class="flex gap-3 text-sm text-slate-700">
+                                <i data-lucide="check-circle" class="text-blue-500 w-5 h-5 flex-shrink-0"></i>
+                                Compreender a estrutura de endereçamento OID.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: Modelo OSI de Gerência -->
+        <section id="page-2" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-6 flex items-center gap-3">
+                <i data-lucide="component" class="text-blue-600"></i> Modelo de Gerência OSI
+            </h2>
+            <div class="prose prose-slate max-w-none text-slate-600 mb-8">
+                <p>O Modelo OSI de Gerência de Redes foi concebido para ser a solução definitiva e completa para sistemas abertos. É uma arquitetura **robusta, orientada a objetos e altamente complexa**.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-slate-800 mb-2">Protocolo CMIP</h4>
+                    <p class="text-xs text-slate-500">Common Management Information Protocol. Diferente do SNMP, o CMIP é muito mais "inteligente" e exige alto processamento dos ativos.</p>
+                </div>
+                <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-slate-800 mb-2">Sistemas Abertos</h4>
+                    <p class="text-xs text-slate-500">Focado na interoperabilidade total entre fabricantes, seguindo rigorosamente as camadas da ISO.</p>
+                </div>
+                <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-slate-800 mb-2">Visão Acadêmica</h4>
+                    <p class="text-xs text-slate-500">Embora tecnicamente superior em alguns aspectos, sua implementação no mercado é rara devido à sua "pesada" curva de aprendizado.</p>
+                </div>
+            </div>
+
+            <div class="p-6 bg-amber-50 rounded-2xl border border-amber-200 flex gap-4">
+                <i data-lucide="info" class="text-amber-500 flex-shrink-0"></i>
+                <div class="text-sm text-amber-800">
+                    <strong>Dica:</strong> Não gaste muita energia decorando comandos CMIP. O mercado escolheu o TCP/IP. Foque no OSI para entender a *teoria estrutural* que inspirou o que usamos hoje.
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: Modelo TCP/IP de Gerência -->
+        <section id="page-3" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-6 flex items-center gap-3">
+                <i data-lucide="globe" class="text-blue-600"></i> Modelo de Gerência TCP/IP
+            </h2>
+            <div class="bg-slate-900 text-white p-10 rounded-3xl mb-8 relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-bold mb-4">O Padrão de Mercado</h3>
+                    <p class="text-slate-400 mb-6 leading-relaxed">
+                        Enquanto o OSI buscava a perfeição acadêmica, o modelo TCP/IP buscava a **simplicidade**. Ele nasceu da necessidade de gerenciar a Internet em crescimento explosivo.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="p-5 bg-white/10 rounded-xl border border-white/20">
+                            <span class="text-blue-400 font-black block mb-2 text-xl">SNMP</span>
+                            <p class="text-xs">Simple Network Management Protocol. É o coração deste modelo. Leve, eficiente e onipresente em roteadores, switches e impressoras.</p>
+                        </div>
+                        <div class="p-5 bg-white/10 rounded-xl border border-white/20">
+                            <span class="text-emerald-400 font-black block mb-2 text-xl">Pragmatismo</span>
+                            <p class="text-xs">Focado no "mínimo necessário" para manter a rede funcional. É fácil de implementar em dispositivos com pouco hardware.</p>
+                        </div>
+                    </div>
+                </div>
+                <i data-lucide="zap" class="absolute right-0 bottom-0 text-white/5 w-64 h-64 -mb-10 -mr-10"></i>
+            </div>
+            <p class="text-slate-600 text-sm">O modelo TCP/IP divide a gerência em três componentes: o Gerente (NMS), o Agente (dispositivo) e a MIB (banco de dados).</p>
+        </section>
+
+        <!-- PAGE 4: Tabela Comparativa -->
+        <section id="page-4" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-8 text-center">OSI vs. TCP/IP: O Confronto</h2>
+            
+            <div class="overflow-hidden rounded-2xl border border-slate-200 shadow-lg">
+                <table class="w-full text-left bg-white border-collapse">
+                    <thead>
+                        <tr class="bg-slate-800 text-white">
+                            <th class="p-4 font-bold text-sm">Critério</th>
+                            <th class="p-4 font-bold text-sm">Modelo OSI</th>
+                            <th class="p-4 font-bold text-sm">Modelo TCP/IP</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm">
+                        <tr>
+                            <td class="p-4 font-bold bg-slate-50">Protocolo Principal</td>
+                            <td class="p-4">CMIP (Complexo)</td>
+                            <td class="p-4">SNMP (Simples)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold bg-slate-50">Orientação</td>
+                            <td class="p-4">Orientado a Objetos</td>
+                            <td class="p-4">Orientado a Variáveis</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold bg-slate-50">Consumo de Recursos</td>
+                            <td class="p-4 text-red-600 font-medium">Alto (Pesado)</td>
+                            <td class="p-4 text-emerald-600 font-medium">Baixo (Leve)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold bg-slate-50">Implementação</td>
+                            <td class="p-4">Difícil / Acadêmica</td>
+                            <td class="p-4 font-bold">Padrão de Mercado</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold bg-slate-50">Filosofia</td>
+                            <td class="p-4 italic">"Gerencie tudo com detalhes"</td>
+                            <td class="p-4 italic">"Mantenha a rede viva"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PAGE 5: Objetos Gerenciáveis e OID -->
+        <section id="page-5" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-6 flex items-center gap-3">
+                <i data-lucide="search" class="text-blue-600"></i> Objetos Gerenciáveis e MIB
+            </h2>
+            
+            <div class="grid md:grid-cols-12 gap-10 mb-10">
+                <div class="md:col-span-7">
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        Um **Objeto Gerenciável** é qualquer dado que um agente pode informar ao gerente. Exemplos:
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-8">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">Uptime do Sistema</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">Status de Porta (Up/Down)</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">Erros de Input</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">Consumo de Banda</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">O que é a MIB?</h3>
+                    <p class="text-sm text-slate-500 italic mb-4 leading-relaxed">
+                        A MIB (Management Information Base) funciona como o "catálogo" de todos os objetos que um dispositivo suporta. Se não está na MIB, o SNMP não pode ver.
+                    </p>
+                </div>
+                <div class="md:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 shadow-inner">
+                    <h4 class="text-center font-bold text-slate-400 uppercase text-xs tracking-widest mb-6">A Hierarquia OID</h4>
+                    <div class="space-y-2">
+                        <div class="oid-node p-2 border rounded-lg text-xs font-mono">1. iso</div>
+                        <div class="oid-node p-2 border rounded-lg text-xs font-mono ml-4">3. org</div>
+                        <div class="oid-node p-2 border rounded-lg text-xs font-mono ml-8">6. dod</div>
+                        <div class="oid-node p-2 border rounded-lg text-xs font-mono ml-12 bg-blue-50 border-blue-200 font-bold">1. internet</div>
+                        <div class="oid-node p-2 border rounded-lg text-xs font-mono ml-16 italic">2. mgmt (management)</div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-4 text-center">O OID padrão para objetos de gerência começa em <strong>.1.3.6.1.2.1</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 6: Workshop Prático -->
+        <section id="page-6" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-8 flex items-center gap-3">
+                <i data-lucide="layout" class="text-blue-600"></i> Workshop: Mapeando Ativos
+            </h2>
+            
+            <div class="bg-blue-900 text-white p-8 rounded-3xl mb-10">
+                <h3 class="text-xl font-bold mb-4">O Cenário: Rede Corporativa "XYZ"</h3>
+                <p class="text-sm text-blue-200 leading-relaxed mb-6">
+                    Sua rede possui: <strong>1 Roteador (Borda), 2 Switches (Acesso) e 1 Servidor de Arquivos (Interno)</strong>.
+                </p>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-white/10 border border-white/20 rounded-xl">
+                        <label class="block text-xs font-bold uppercase mb-2">Monitoria no Roteador</label>
+                        <input type="text" placeholder="Objeto 1" class="w-full bg-slate-800 text-xs p-2 rounded border-none mb-2">
+                        <input type="text" placeholder="Objeto 2" class="w-full bg-slate-800 text-xs p-2 rounded border-none">
+                    </div>
+                    <div class="p-4 bg-white/10 border border-white/20 rounded-xl">
+                        <label class="block text-xs font-bold uppercase mb-2">Monitoria nos Switches</label>
+                        <input type="text" placeholder="Objeto 1" class="w-full bg-slate-800 text-xs p-2 rounded border-none mb-2">
+                        <input type="text" placeholder="Objeto 2" class="w-full bg-slate-800 text-xs p-2 rounded border-none">
+                    </div>
+                    <div class="p-4 bg-white/10 border border-white/20 rounded-xl">
+                        <label class="block text-xs font-bold uppercase mb-2">Monitoria no Servidor</label>
+                        <input type="text" placeholder="Objeto 1" class="w-full bg-slate-800 text-xs p-2 rounded border-none mb-2">
+                        <input type="text" placeholder="Objeto 2" class="w-full bg-slate-800 text-xs p-2 rounded border-none">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="toggleElement('answer-key')" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-700 transition w-full md:w-auto">
+                Revelar Folha de Respostas Recomendada
+            </button>
+
+            <div id="answer-key" class="hidden mt-8 p-6 bg-emerald-50 rounded-3xl border border-emerald-100">
+                <h4 class="font-bold text-emerald-800 mb-4">Sugestão Técnica:</h4>
+                <ul class="text-sm text-emerald-700 space-y-2">
+                    <li><strong>Roteador:</strong> Utilização da CPU (OID 1.3.6.1.4.1.9.2.1.56) e Tráfego do link de internet (ifInOctets/ifOutOctets).</li>
+                    <li><strong>Switches:</strong> Status operacional das portas (ifOperStatus) e Erros de Colisão.</li>
+                    <li><strong>Servidor:</strong> Espaço em disco livre e Utilização de Memória RAM.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- PAGE 7: Atividade Lúdica -->
+        <section id="page-7" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-8">Atividade: Quem Sou Eu?</h2>
+            
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-6 items-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="help-circle" class="text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-slate-800 mb-2">"Eu opero na camada de aplicação, sou baseado em UDP e sou o favorito do modelo TCP/IP. Quem sou eu?"</p>
+                        <div class="flex gap-2">
+                            <button onclick="checkGame(this, 'SNMP')" class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition">TCP</button>
+                            <button onclick="checkGame(this, 'SNMP')" class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition">SNMP</button>
+                            <button onclick="checkGame(this, 'SNMP')" class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition">CMIP</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold mb-4">Análise de Log Simulado</h4>
+                    <div class="bg-slate-900 p-4 rounded-xl font-mono text-[10px] text-emerald-400 mb-4">
+                        [Feb 10 14:02:11] AGENT_REJECT: Request from 10.0.0.5 denied. Security context mismatch. (OID .1.3.6.1.2.1.1.3.0)
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Qual modelo de gerência este log parece seguir?</p>
+                    <div class="flex gap-2">
+                        <button onclick="checkGame(this, 'TCP/IP')" class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition">OSI (Pela complexidade)</button>
+                        <button onclick="checkGame(this, 'TCP/IP')" class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition">TCP/IP (Pelo uso de OIDs)</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 8: Fechamento -->
+        <section id="page-8" class="page-transition hidden-page text-center">
+            <div class="max-w-2xl mx-auto">
+                <i data-lucide="award" class="mx-auto text-blue-600 w-20 h-20 mb-6"></i>
+                <h2 class="text-4xl font-black mb-6">Material 02 Concluída!</h2>
+                <p class="text-slate-600 mb-10 leading-relaxed">
+                    Você agora entende a diferença entre a teoria (OSI) e a prática (TCP/IP), além de saber mapear o que deve ser monitorado em uma rede real.
+                </p>
+                
+                <div class="bg-blue-600 text-white p-8 rounded-3xl shadow-xl text-left mb-8">
+                    <h4 class="font-black uppercase tracking-tighter mb-4">Próxima Parada: 24/02</h4>
+                    <p class="text-sm opacity-90 leading-relaxed">
+                        Prepare-se para entrar no mundo do **Troubleshooting**. Vamos aprender metodologias para detectar problemas nos níveis físico e de enlace. Revise os conceitos de "Colisão de Rede" e "Perda de Pacote" para chegar afiado!
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="window.print()" class="px-8 py-4 bg-slate-800 text-white rounded-2xl font-bold flex items-center justify-center gap-2">
+                        <i data-lucide="printer"></i> Baixar Material 02 (PDF)
+                    </button>
+                    <button onclick="changePage(1-currentPage)" class="px-8 py-4 border-2 border-slate-200 text-slate-600 rounded-2xl font-bold">
+                        Voltar ao Início
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Navigation Buttons -->
+    <nav class="fixed bottom-0 left-0 w-full glass-effect border-t border-slate-200 p-4 z-50 no-print">
+        <div class="max-w-5xl mx-auto flex justify-between gap-4">
+            <button id="prevBtn" onclick="changePage(-1)" class="flex-1 max-w-[150px] py-4 bg-slate-100 text-slate-500 rounded-2xl font-black transition disabled:opacity-20 flex items-center justify-center gap-2">
+                <i data-lucide="chevron-left"></i> ANTERIOR
+            </button>
+            <button id="nextBtn" onclick="changePage(1)" class="flex-1 max-w-[200px] py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl shadow-blue-200 hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                PRÓXIMO <i data-lucide="chevron-right"></i>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 8;
+
+        lucide.createIcons();
+
+        // Setup Indicators
+        const indicators = document.getElementById('step-indicators');
+        for (let i = 1; i <= totalPages; i++) {
+            const dot = document.createElement('div');
+            dot.className = `step-dot w-2 h-2 rounded-full bg-slate-200 transition-all ${i === 1 ? 'active' : ''}`;
+            dot.id = `dot-${i}`;
+            indicators.appendChild(dot);
+        }
+
+        function updateUI() {
+            for (let i = 1; i <= totalPages; i++) {
+                const page = document.getElementById(`page-${i}`);
+                const dot = document.getElementById(`dot-${i}`);
+                if (i === currentPage) {
+                    page.classList.remove('hidden-page');
+                    page.classList.add('active-page');
+                    dot.classList.add('active');
+                } else {
+                    page.classList.add('hidden-page');
+                    page.classList.remove('active-page');
+                    dot.classList.remove('active');
+                }
+            }
+
+            document.getElementById('page-counter').innerText = `Pág ${currentPage}/${totalPages}`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').innerHTML = currentPage === totalPages ? 'FINALIZAR' : 'PRÓXIMO <i data-lucide="chevron-right"></i>';
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changePage(dir) {
+            currentPage += dir;
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            updateUI();
+        }
+
+        function toggleElement(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        function checkGame(btn, correct) {
+            const isCorrect = btn.innerText.includes(correct);
+            btn.classList.add(isCorrect ? 'bg-emerald-600' : 'bg-red-600', 'text-white');
+            btn.innerHTML += isCorrect ? ' ✓' : ' ✗';
+            const group = btn.parentElement.querySelectorAll('button');
+            group.forEach(b => b.disabled = true);
+        }
+    </script>
+</body>
+</html>

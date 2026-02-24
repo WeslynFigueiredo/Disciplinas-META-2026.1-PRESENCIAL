@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerência de Redes - Aula 03: Metodologia de Diagnóstico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'Fira Code', monospace; }
+
+        .page-transition { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hidden-page { display: none; opacity: 0; transform: translateY(10px); }
+        .active-page { display: block; opacity: 1; transform: translateY(0); }
+
+        .step-dot.active {
+            background-color: #3b82f6;
+            width: 1.2rem;
+            border-radius: 1rem;
+        }
+
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+
+        @media print {
+            .hidden-page { display: block !important; opacity: 1 !important; transform: none !important; }
+            .no-print, nav, footer, #progress-bar { display: none !important; }
+            main { padding: 0 !important; max-width: 100% !important; }
+            section { page-break-after: always; border-bottom: 2px solid #eee; padding: 2rem 0; }
+            .print-header { display: flex !important; border-bottom: 4px solid #3b82f6; margin-bottom: 2rem; }
+        }
+
+        .log-line:hover { background: rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 scroll-smooth">
+
+    <!-- Header Fixo -->
+    <header class="fixed top-0 left-0 w-full glass border-b border-slate-200 z-50 px-6 py-3 no-print">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <!-- Meta Logo -->
+                <div class="flex items-center gap-2">
+                   <img src="Logo Centro Universitário META.png" alt="Logo META" class="h-10 w-auto object-contain">
+                    <div class="hidden lg:flex items-center border-l border-slate-300 pl-4 h-8">
+                    <span class="font-bold text-slate-800">
+                        Gerência de Redes de Computadores<span class="text-blue-600"> | Material 03</span>
+                    </span>
+                </div>
+            <div class="flex items-center gap-1.5" id="step-indicators"></div>
+            <span class="text-[10px] font-bold text-slate-400" id="page-counter">PÁG 01/20</span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto pt-28 pb-32 px-6">
+
+        <!-- CABEÇALHO DE IMPRESSÃO -->
+        <div class="hidden print-header items-center gap-4 py-4 mb-8">
+            <h1 class="text-2xl font-black uppercase">Gerência de Redes: Metodologia de Diagnóstico</h1>
+            <span class="text-slate-400 ml-auto">Fevereiro 2026 - Material 03</span>
+        </div>
+
+        <!-- PÁGINA 1: CAPA -->
+        <section id="page-1" class="page-transition active-page">
+            <div class="bg-slate-900 text-white p-12 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <span class="text-blue-400 font-bold tracking-widest text-xs uppercase mb-4 block">Especialização Técnica</span>
+                    <h2 class="text-5xl font-black mb-6 leading-tight">O Administrador como <span class="text-blue-500 underline decoration-4 underline-offset-8">Detetive</span></h2>
+                    <p class="text-slate-400 text-lg max-w-xl mb-10 leading-relaxed">
+                        Esqueça a sorte. A infraestrutura moderna exige uma abordagem científica para identificar a causa raiz de falhas antes que elas custem milhões.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="flex -space-x-2">
+                            <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center border-2 border-slate-900">1</div>
+                            <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center border-2 border-slate-900">2</div>
+                            <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center border-2 border-slate-900">3</div>
+                        </div>
+                        <span class="text-sm font-medium text-slate-300">Nível: Engenheiro de Confiabilidade (SRE)</span>
+                    </div>
+                </div>
+                <div class="absolute -right-20 -bottom-20 opacity-10">
+                    <i data-lucide="search" size="400"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 2: O FIM DA TENTATIVA E ERRO -->
+        <section id="page-2" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Chega de "Tentativa e Erro"</h3>
+            <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed mb-8">
+                <p>Muitos técnicos juniores começam a trocar cabos, reiniciar servidores e alterar configurações aleatoriamente quando surge um problema. Isso é **perigoso**.</p>
+                <ul class="space-y-4 mt-6">
+                    <li class="flex items-start gap-3">
+                        <div class="p-1 bg-red-100 rounded text-red-600 mt-1"><i data-lucide="x-circle" size="16"></i></div>
+                        <span><strong>Dificulta o Isolamento:</strong> Se você muda três coisas e o problema some, você não sabe qual era a causa raiz.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="p-1 bg-red-100 rounded text-red-600 mt-1"><i data-lucide="x-circle" size="16"></i></div>
+                        <span><strong>Cria Efeitos Colaterais:</strong> Uma mudança "chutada" pode gerar um novo incidente mais grave.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="p-1 bg-red-100 rounded text-red-600 mt-1"><i data-lucide="x-circle" size="16"></i></div>
+                        <span><strong>Inconsistência:</strong> O problema pode "sumir" e voltar pior em uma hora.</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                <p class="text-blue-800 text-sm italic">"Se você tem apenas um martelo, todos os problemas parecem pregos. Metodologia é ter a caixa de ferramentas completa."</p>
+            </div>
+        </section>
+
+        <!-- PÁGINA 3: MTTR - A MÉTRICA SAGRADA -->
+        <section id="page-3" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-8 flex items-center gap-3"><i data-lucide="timer" class="text-blue-600"></i> MTTR: A Métrica de Sucesso</h3>
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <p class="text-slate-600 mb-6">O objetivo de um gestor de redes não é apenas "consertar", mas reduzir o **MTTR (Mean Time To Repair)**.</p>
+                
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex-1 p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                        <span class="text-xs uppercase font-bold text-slate-400 block mb-2">Definição</span>
+                        <span class="text-2xl font-black">MTTR</span>
+                        <p class="text-xs text-slate-500 mt-2">Média de tempo entre a descoberta da falha e a resolução completa.</p>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-center">
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-bold uppercase"><span class="text-slate-500">Eficiência</span><span class="text-emerald-500">Meta SRE</span></div>
+                            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="w-4/5 h-full bg-emerald-500"></div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-4 leading-relaxed italic">Reduzir o MTTR significa ter processos tão claros que o diagnóstico flui sem interrupções de raciocínio.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 4: OS 5 PILARES DO DIAGNÓSTICO -->
+        <section id="page-4" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-8">A Metodologia de 5 Passos</h3>
+            <div class="grid grid-cols-1 gap-3">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl flex items-center gap-4">
+                    <span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-black">01</span>
+                    <span class="font-bold">Observação e Coleta</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl flex items-center gap-4">
+                    <span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-black">02</span>
+                    <span class="font-bold">Isolamento de Escopo</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl flex items-center gap-4">
+                    <span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-black">03</span>
+                    <span class="font-bold">Análise de Causa Raiz (RCA)</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl flex items-center gap-4">
+                    <span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-black">04</span>
+                    <span class="font-bold">Plano de Ação e Correção</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl flex items-center gap-4">
+                    <span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-black">05</span>
+                    <span class="font-bold">Verificação e Documentação</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 5: FASE 1 - OBSERVAÇÃO -->
+        <section id="page-5" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Fase 01: O Que Está Acontecendo?</h3>
+            <div class="bg-white p-8 rounded-3xl border border-slate-200">
+                <p class="text-slate-600 mb-6 font-medium italic">"A rede está lenta."</p>
+                <p class="text-slate-600 text-sm leading-relaxed mb-6">Este sintoma é vago. No passo 01, o objetivo é extrair o máximo de fatos técnicos:</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <h4 class="font-bold text-xs uppercase mb-2 text-blue-600">Perguntas Chave</h4>
+                        <ul class="text-xs space-y-2">
+                            <li>• Qual aplicação específica está lenta?</li>
+                            <li>• Quando começou? (Data/Hora exata)</li>
+                            <li>• É intermitente ou contínuo?</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <h4 class="font-bold text-xs uppercase mb-2 text-blue-600">Ferramentas</h4>
+                        <ul class="text-xs space-y-2">
+                            <li>• Ping / Traceroute</li>
+                            <li>• Zabbix Dashboards</li>
+                            <li>• Relatórios de Usuários</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 6: FASE 2 - ISOLAMENTO -->
+        <section id="page-6" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Fase 02: Definindo o Escopo</h3>
+            <div class="bg-blue-900 text-white p-8 rounded-3xl shadow-xl">
+                <h4 class="text-xl font-bold mb-4">A Arte de Isolar</h4>
+                <p class="text-blue-200 text-sm mb-6 leading-relaxed">Isolar é definir quem **não** está sendo afetado. Isso economiza 80% do seu tempo.</p>
+                
+                <div class="space-y-4">
+                    <div class="p-4 bg-white/5 border border-white/10 rounded-xl flex gap-3 items-center">
+                        <i data-lucide="users" class="text-blue-400"></i>
+                        <span class="text-xs">Afeta todos os usuários ou apenas o departamento financeiro?</span>
+                    </div>
+                    <div class="p-4 bg-white/5 border border-white/10 rounded-xl flex gap-3 items-center">
+                        <i data-lucide="map" class="text-blue-400"></i>
+                        <span class="text-xs">Afeta apenas a conexão Wi-Fi ou a rede cabeada também?</span>
+                    </div>
+                    <div class="p-4 bg-white/5 border border-white/10 rounded-xl flex gap-3 items-center">
+                        <i data-lucide="server" class="text-blue-400"></i>
+                        <span class="text-xs">É um problema com o Servidor A ou com o Switch de Core?</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 7: FASE 3 - CAUSA RAIZ (RCA) -->
+        <section id="page-7" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Fase 03: Por que falhou? (RCA)</h3>
+            <div class="bg-white p-8 rounded-3xl border border-slate-200">
+                <h4 class="font-bold text-lg mb-4">A Técnica dos "5 Porquês"</h4>
+                <p class="text-sm text-slate-500 mb-6">Aplicada à Gerência de Redes:</p>
+                
+                <div class="space-y-3">
+                    <div class="text-xs p-3 bg-slate-50 rounded-lg"><strong>1. Por que o sistema parou?</strong> Porque o banco de dados não responde.</div>
+                    <div class="text-xs p-3 bg-slate-100 rounded-lg"><strong>2. Por que o BD não responde?</strong> Porque perdeu conexão com a rede.</div>
+                    <div class="text-xs p-3 bg-slate-50 rounded-lg"><strong>3. Por que perdeu conexão?</strong> Porque a porta 10 do switch está DOWN.</div>
+                    <div class="text-xs p-3 bg-slate-100 rounded-lg"><strong>4. Por que a porta está DOWN?</strong> Porque o cabo de fibra rompeu.</div>
+                    <div class="text-xs p-3 bg-slate-50 rounded-lg font-bold border-l-4 border-blue-500"><strong>5. Por que rompeu?</strong> Porque não havia proteção mecânica (eletroduto) em uma área de tráfego.</div>
+                </div>
+                <p class="mt-6 text-sm font-bold text-blue-600 uppercase">Encontramos a Causa Raiz!</p>
+            </div>
+        </section>
+
+        <!-- PÁGINA 8: FASE 4 - PLANO DE AÇÃO -->
+        <section id="page-8" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Fase 04: Implementação e Correção</h3>
+            <div class="p-8 bg-emerald-50 rounded-3xl border border-emerald-100 text-emerald-900">
+                <h4 class="font-black text-xl mb-4 uppercase">Regras de Ouro SRE</h4>
+                <ul class="space-y-6">
+                    <li class="flex gap-4">
+                        <div class="h-8 w-8 bg-emerald-600 text-white rounded-full flex items-center justify-center flex-shrink-0">1</div>
+                        <div>
+                            <span class="font-bold">Uma mudança por vez:</span> Nunca altere várias configurações simultaneamente.
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <div class="h-8 w-8 bg-emerald-600 text-white rounded-full flex items-center justify-center flex-shrink-0">2</div>
+                        <div>
+                            <span class="font-bold">Plano de Rollback:</span> Saiba exatamente como desfazer o que você está prestes a fazer se der errado.
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <div class="h-8 w-8 bg-emerald-600 text-white rounded-full flex items-center justify-center flex-shrink-0">3</div>
+                        <div>
+                            <span class="font-bold">Comunicar Stakeholders:</span> Avise quem será afetado pela interrupção momentânea da manutenção.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- PÁGINA 9: FASE 5 - VERIFICAÇÃO E DOC -->
+        <section id="page-9" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Fase 05: Documentar ou Repetir</h3>
+            <div class="bg-white p-8 rounded-3xl border border-slate-200">
+                <div class="flex items-center gap-3 mb-6">
+                    <i data-lucide="book-open" class="text-blue-600"></i>
+                    <h4 class="font-bold">Base de Conhecimento</h4>
+                </div>
+                <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+                    Se você conserta algo e não documenta, você está condenando seu "eu do futuro" a gastar o mesmo tempo na próxima vez.
+                </p>
+                <div class="bg-slate-50 p-6 rounded-2xl">
+                    <h5 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Estrutura Sugerida de Log de Resolução</h5>
+                    <ul class="text-xs space-y-2 font-mono">
+                        <li>• ID do Incidente: #1029</li>
+                        <li>• Sintoma: Latência intermitente</li>
+                        <li>• Causa: Loop de Camada 2 no Switch B</li>
+                        <li>• Resolução: Ativação de Rapid STP</li>
+                        <li>• Responsável: [Seu Nome]</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 10: TOP-DOWN VS BOTTOM-UP -->
+        <section id="page-10" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-8 flex items-center gap-3"><i data-lucide="layers" class="text-blue-600"></i> Estratégias de Abordagem</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-sm">
+                        <i data-lucide="arrow-up" class="text-blue-500"></i> Bottom-Up (Camada 1 -> 7)
+                    </h4>
+                    <p class="text-xs text-slate-500 leading-relaxed mb-4 italic">"Primeiro vejo se o cabo está ligado e o link está aceso."</p>
+                    <p class="text-[11px] text-slate-600">Ideal para problemas de conectividade total ou instabilidade elétrica/física.</p>
+                </div>
+                <div class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-sm">
+                        <i data-lucide="arrow-down" class="text-orange-500"></i> Top-Down (Camada 7 -> 1)
+                    </h4>
+                    <p class="text-xs text-slate-500 leading-relaxed mb-4 italic">"Primeiro vejo se a página web carrega ou se há erro HTTP."</p>
+                    <p class="text-[11px] text-slate-600">Ideal quando apenas um serviço específico falha, enquanto o resto da rede está normal.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 11: O DNA DOS EVENTOS: LOGS -->
+        <section id="page-11" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Logs: O DNA dos Eventos</h3>
+            <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed mb-10">
+                <p>Na **Gerência de Falhas (FCAPS)**, os logs são a nossa principal evidência. Um log é um registro cronológico de eventos gerado por um hardware ou software.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="p-5 bg-slate-900 text-white rounded-2xl relative overflow-hidden group">
+                    <h4 class="font-bold mb-2">Logs Reativos</h4>
+                    <p class="text-[10px] text-slate-400">Gerados quando algo dá errado (ex: SSH login failed).</p>
+                    <i data-lucide="file-warning" class="absolute -right-2 -bottom-2 opacity-5" size="80"></i>
+                </div>
+                <div class="p-5 bg-slate-900 text-white rounded-2xl relative overflow-hidden group">
+                    <h4 class="font-bold mb-2">Logs Informativos</h4>
+                    <p class="text-[10px] text-slate-400">Apenas registros de estado (ex: Interface Gigabit 0/1 changed state to UP).</p>
+                    <i data-lucide="file-text" class="absolute -right-2 -bottom-2 opacity-5" size="80"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 12: ANATOMIA DE UM LOG -->
+        <section id="page-12" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-8">Anatomia de uma Linha de Log</h3>
+            <div class="bg-slate-900 rounded-2xl p-8 text-white font-mono text-sm leading-relaxed overflow-x-auto">
+                <span class="text-slate-500 italic"># Exemplo de Syslog Linux</span><br>
+                <span class="text-emerald-400">Feb 24 19:42:01</span> 
+                <span class="text-blue-400">meta-srv-01</span> 
+                <span class="text-orange-400">sshd[1245]:</span> 
+                <span class="text-red-500">Failed password</span> for root from 192.168.1.10
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                <div class="p-3 border rounded-xl text-center"><span class="block font-black text-blue-600 text-xs">Timestamp</span><span class="text-[9px] uppercase">Data/Hora</span></div>
+                <div class="p-3 border rounded-xl text-center"><span class="block font-black text-blue-600 text-xs">Hostname</span><span class="text-[9px] uppercase">Origem</span></div>
+                <div class="p-3 border rounded-xl text-center"><span class="block font-black text-blue-600 text-xs">Process/Tag</span><span class="text-[9px] uppercase">Serviço</span></div>
+                <div class="p-3 border rounded-xl text-center"><span class="block font-black text-blue-600 text-xs">Message</span><span class="text-[9px] uppercase">O Evento</span></div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 13: LOGS CISCO IOS -->
+        <section id="page-13" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6 flex items-center gap-2"><i data-lucide="terminal"></i> Logs de Ativos (Cisco)</h3>
+            <p class="text-sm text-slate-600 mb-6 italic">Como os roteadores conversam com você:</p>
+            <div class="bg-slate-900 rounded-2xl p-6 text-emerald-400 font-mono text-[10px] space-y-1">
+                <div class="log-line p-1">%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down</div>
+                <div class="log-line p-1">%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to down</div>
+                <div class="log-line p-1">%SYS-5-CONFIG_I: Configured from console by vty0 (10.1.1.5)</div>
+            </div>
+            <div class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-xl">
+                <h5 class="text-xs font-bold text-blue-800 uppercase mb-2">Expert Tip</h5>
+                <p class="text-[11px] text-blue-900">O número central no código do log (ex: o '3' em LINK-3-UPDOWN) indica a <strong>severidade</strong>. 0 é Emergência, 7 é Debug. Memorize: quanto menor o número, mais você deve correr.</p>
+            </div>
+        </section>
+
+        <!-- PÁGINA 14: WINDOWS E LINUX -->
+        <section id="page-14" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-8">Outros Mundos: Windows & Linux</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="monitor"></i> Event Viewer</h4>
+                    <p class="text-xs text-slate-600 mb-4">No Windows, os logs são estruturados em arquivos .evtx (Application, Security, System).</p>
+                    <div class="bg-slate-100 p-4 rounded-xl text-[10px] font-mono border">
+                        Level: Error<br>
+                        Source: Service Control Manager<br>
+                        EventID: 7034<br>
+                        Message: The SQL Server service terminated unexpectedly.
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="code"></i> Syslog / Journald</h4>
+                    <p class="text-xs text-slate-600 mb-4">No Linux, quase tudo vai para /var/log/syslog ou é lido via journalctl.</p>
+                    <div class="bg-slate-800 p-4 rounded-xl text-[10px] font-mono text-white">
+                        $ journalctl -u nginx<br>
+                        -- Logs begin at Tue 2026...<br>
+                        Feb 24 19:45:01 server nginx[80]: [error] open() "/var/www/html/index.html" failed (2: No such file)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 15: PALAVRAS-CHAVE CRÍTICAS -->
+        <section id="page-15" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Palavras-Chave para Caçar</h3>
+            <p class="text-slate-600 mb-8">Ao analisar milhares de linhas, use o atalho **CTRL + F** para estas palavras críticas:</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-red-100 text-red-800 rounded-2xl font-black text-center border-2 border-red-200">CRITICAL</div>
+                <div class="p-4 bg-red-50 text-red-600 rounded-2xl font-black text-center border-2 border-red-100">ERROR</div>
+                <div class="p-4 bg-orange-100 text-orange-800 rounded-2xl font-black text-center border-2 border-orange-200">WARNING</div>
+                <div class="p-4 bg-slate-900 text-white rounded-2xl font-black text-center border-2 border-slate-700 uppercase">Down</div>
+                <div class="p-4 bg-slate-900 text-white rounded-2xl font-black text-center border-2 border-slate-700 uppercase italic tracking-widest">Timeout</div>
+                <div class="p-4 bg-blue-100 text-blue-800 rounded-2xl font-black text-center border-2 border-blue-200 uppercase">Reject</div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 16: ESTUDO DE CASO - O GARGALO -->
+        <section id="page-16" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6">Caso: O Gargalo Misterioso</h3>
+            <div class="bg-white p-10 rounded-3xl border border-slate-200 shadow-xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <h4 class="text-xl font-bold text-red-600 mb-4">Sintoma Reportado</h4>
+                    <p class="text-slate-700 leading-relaxed mb-6 font-medium">
+                        "O sistema de vendas da filial leste fica extremamente lento todos os dias, mas apenas no horário das 14h às 16h."
+                    </p>
+                    <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border">
+                        <i data-lucide="clock" class="text-blue-500"></i>
+                        <span class="text-xs italic">Isolamento Temporal: 14h - 16h diário.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 17: CASO - RESOLUÇÃO -->
+        <section id="page-17" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-8 italic">Resolvendo o Gargalo...</h3>
+            <div class="space-y-6">
+                <div class="flex gap-4">
+                    <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+                    <p class="text-sm"><strong>Passo 1:</strong> Olhamos os gráficos de tráfego. Notamos que o link de 100Mbps chega a 99Mbps exatamente às 14:05.</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+                    <p class="text-sm"><strong>Passo 2:</strong> Analisamos os logs do servidor. Descobrimos um processo de Backup automático agendado para rodar às 14h.</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">3</div>
+                    <p class="text-sm"><strong>Passo 3:</strong> Causa Raiz? <strong>Gerência de Performance falhou</strong> ao agendar uma tarefa pesada em horário comercial.</p>
+                </div>
+                <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 text-sm font-bold text-emerald-800">
+                    Lição: Nem tudo que está lento é culpa do hardware. Às vezes, o software está apenas fazendo o que mandaram, na hora errada.
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 18: ATIVIDADE: LOG EXPLORER -->
+        <section id="page-18" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-6 flex items-center gap-2"><i data-lucide="terminal"></i> Atividade: Log Explorer</h3>
+            <p class="text-slate-600 text-sm mb-8">Coloque estes logs em ordem lógica de ocorrência:</p>
+            
+            <div class="space-y-4" id="log-activity">
+                <div class="p-4 bg-slate-900 text-white font-mono text-[10px] rounded-xl border border-slate-700 cursor-move" draggable="true" id="log-b">B) 19:10:05 - Connection Refused on Port 80</div>
+                <div class="p-4 bg-slate-900 text-white font-mono text-[10px] rounded-xl border border-slate-700 cursor-move" draggable="true" id="log-a">A) 19:10:01 - Interface FastEthernet0/1 changed state to DOWN</div>
+                <div class="p-4 bg-slate-900 text-white font-mono text-[10px] rounded-xl border border-slate-200 cursor-move" draggable="true" id="log-c">C) 19:10:30 - User report: "Webpage not loading"</div>
+            </div>
+            
+            <div class="mt-8 flex justify-center">
+                <button onclick="checkLogActivity()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg transition">Verificar Ordem</button>
+            </div>
+            <p id="log-feedback" class="mt-4 text-center font-bold hidden"></p>
+        </section>
+
+        <!-- PÁGINA 19: ATIVIDADE: MAPA DE CALOR -->
+        <section id="page-19" class="page-transition hidden-page">
+            <h3 class="text-3xl font-black mb-8 text-center">Mapa de Calor: Sintoma vs Camada</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-5 bg-white border border-slate-200 rounded-3xl text-center">
+                    <span class="block text-slate-400 text-[10px] font-black uppercase mb-2 tracking-widest">Sintoma</span>
+                    <p class="font-bold text-slate-800 mb-4">"Não pinga o Google"</p>
+                    <select class="w-full bg-slate-100 p-2 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                        <option>Qual camada?</option>
+                        <option>Camada 1 - Física</option>
+                        <option>Camada 3 - Rede (IP)</option>
+                        <option>Camada 7 - Aplicação</option>
+                    </select>
+                </div>
+                <div class="p-5 bg-white border border-slate-200 rounded-3xl text-center">
+                    <span class="block text-slate-400 text-[10px] font-black uppercase mb-2 tracking-widest">Sintoma</span>
+                    <p class="font-bold text-slate-800 mb-4">"Cabo Desconectado"</p>
+                    <select class="w-full bg-slate-100 p-2 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                        <option>Qual camada?</option>
+                        <option>Camada 1 - Física</option>
+                        <option>Camada 4 - Transporte</option>
+                        <option>Camada 6 - Apresentação</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 20: FECHAMENTO E TAREFA -->
+        <section id="page-20" class="page-transition hidden-page">
+            <div class="max-w-3xl mx-auto text-center">
+                <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <i data-lucide="check-circle-2" size="48"></i>
+                </div>
+                <h2 class="text-4xl font-black mb-6">Módulo de Diagnóstico Concluído</h2>
+                <p class="text-slate-600 mb-10 text-lg">
+                    Você agora domina os 5 passos do diagnóstico SRE e sabe ler a linguagem dos sistemas através dos logs.
+                </p>
+
+                <div class="bg-slate-900 text-white p-10 rounded-[2rem] text-left mb-12 border-b-8 border-blue-600">
+                    <h4 class="font-black text-xs uppercase text-blue-400 tracking-widest mb-6">Tarefa Preparatória para 03/03</h4>
+                    <div class="space-y-4">
+                        <p class="text-sm leading-relaxed">Na próxima aula, vamos descer ao nível dos bits e da eletricidade. Sua missão de pesquisa:</p>
+                        <ul class="text-xs space-y-3 opacity-80 italic">
+                            <li>• O que é uma "Colisão de Rede" e por que elas são raras em redes modernas com switches?</li>
+                            <li>• Como o erro "CRC Error" aparece em um relatório de interface e o que ele diz sobre o cabo?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="window.print()" class="px-8 py-4 bg-slate-800 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-700 transition">
+                        <i data-lucide="printer"></i> Exportar Material de Diagnóstico
+                    </button>
+                    <button onclick="changePage(1-currentPage)" class="px-8 py-4 border-2 border-slate-200 text-slate-600 rounded-2xl font-bold">
+                        Recomeçar Trilha
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Navegação Inferior -->
+    <nav class="fixed bottom-0 left-0 w-full glass border-t border-slate-200 p-4 z-50 no-print">
+        <div class="max-w-6xl mx-auto flex justify-between items-center gap-4">
+            <button id="prevBtn" onclick="changePage(-1)" class="flex-1 max-w-[140px] py-4 bg-slate-100 text-slate-500 rounded-2xl font-black transition disabled:opacity-20 flex items-center justify-center gap-2">
+                <i data-lucide="chevron-left"></i> <span class="hidden sm:inline">VOLTAR</span>
+            </button>
+            
+            <div class="hidden md:flex flex-col items-center">
+                <div class="w-48 h-1 bg-slate-200 rounded-full overflow-hidden">
+                    <div id="nav-progress" class="h-full bg-blue-600 transition-all duration-500 w-0"></div>
+                </div>
+            </div>
+
+            <button id="nextBtn" onclick="changePage(1)" class="flex-1 max-w-[220px] py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl shadow-blue-200 hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                <span id="next-label">PRÓXIMO PASSO</span> <i data-lucide="chevron-right"></i>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 20;
+
+        lucide.createIcons();
+
+        // Setup Indicators
+        const indicators = document.getElementById('step-indicators');
+        for (let i = 1; i <= totalPages; i++) {
+            const dot = document.createElement('div');
+            dot.className = `step-dot w-1.5 h-1.5 rounded-full bg-slate-200 transition-all cursor-pointer ${i === 1 ? 'active' : ''}`;
+            dot.id = `dot-${i}`;
+            dot.onclick = () => { currentPage = i; updateUI(); };
+            indicators.appendChild(dot);
+        }
+
+        function updateUI() {
+            for (let i = 1; i <= totalPages; i++) {
+                const page = document.getElementById(`page-${i}`);
+                const dot = document.getElementById(`dot-${i}`);
+                if (i === currentPage) {
+                    page.classList.remove('hidden-page');
+                    page.classList.add('active-page');
+                    dot.classList.add('active');
+                } else {
+                    page.classList.add('hidden-page');
+                    page.classList.remove('active-page');
+                    dot.classList.remove('active');
+                }
+            }
+
+            document.getElementById('page-counter').innerText = `PÁG ${currentPage < 10 ? '0' + currentPage : currentPage}/20`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('next-label').innerText = currentPage === totalPages ? 'FINALIZAR' : 'PRÓXIMO PASSO';
+            
+            const progress = ((currentPage - 1) / (totalPages - 1)) * 100;
+            document.getElementById('nav-progress').style.width = `${progress}%`;
+
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changePage(dir) {
+            currentPage += dir;
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            updateUI();
+        }
+
+        function checkLogActivity() {
+            const feedback = document.getElementById('log-feedback');
+            feedback.classList.remove('hidden');
+            // Ordem correta Lógica: A (Cabo cai) -> B (Serviço nega conexão) -> C (Usuário reclama)
+            feedback.innerText = "Parabéns! Ordem lógica correta: O hardware falha primeiro (Camada 1), o que mata o serviço (Camada 4/7) e por fim gera a reclamação.";
+            feedback.className = "mt-4 text-center font-bold text-emerald-600 animate-bounce";
+        }
+
+        // Keyboard Support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') changePage(1);
+            if (e.key === 'ArrowLeft') changePage(-1);
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>

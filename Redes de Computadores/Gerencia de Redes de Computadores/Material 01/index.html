@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerência de Redes - Material 01</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .page-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hidden-page {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .active-page {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step-dot.active {
+            background-color: #3b82f6;
+            width: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Estilos específicos para a impressão do PDF completo */
+        @media print {
+            .hidden-page {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+            .fixed, nav, #step-indicators, #prevBtn, #nextBtn, .no-print {
+                display: none !important;
+            }
+            main {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+            section {
+                page-break-after: always;
+                margin-bottom: 3rem !important;
+                padding-top: 2rem !important;
+            }
+            body {
+                background-color: white !important;
+            }
+            .bg-slate-900 {
+                background-color: #0f172a !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+            }
+            h1, h2, h3 {
+                color: #1e293b !important;
+            }
+            .print-logo {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 custom-scrollbar">
+
+    <div class="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 z-50 px-4 py-3 no-print">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            
+            <div class="flex items-center gap-3">
+                <img src="Logo Centro Universitário META.png" alt="Logo META" class="h-10 w-auto object-contain">
+                
+                <div class="hidden lg:flex items-center border-l border-slate-300 pl-4 h-8">
+                    <span class="font-bold text-slate-800">
+                        Gerência de Redes de Computadores<span class="text-blue-600"> | Material 01</span>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="flex gap-1.5" id="step-indicators">
+                </div>
+            <div class="text-xs font-black text-slate-500 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full" id="page-counter">
+                Pág 1/8
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto pt-24 pb-32 px-6">
+        
+        <!-- PAGE 1: Welcome & Deep Context -->
+        <section id="page-1" class="page-transition active-page">
+            <!-- Brand Logo for Print -->
+            <div class="hidden print-logo mb-6">
+                <div class="flex items-center gap-3">
+                <img src="Logo Centro Universitário META.png" alt="Logo META" class="h-10 w-auto object-contain">
+                    <span class="text-xl font-black text-slate-800 uppercase tracking-tighter">Gerência de Redes - Material 01</span>
+                </div>
+                <div class="h-1 bg-blue-600 w-full mt-2"></div>
+            </div>
+
+            <div class="grid md:grid-cols-12 gap-10 items-center">
+                <div class="md:col-span-7">
+                    <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-4">Início da Jornada</span>
+                    <h1 class="text-5xl font-black text-slate-900 leading-tight mb-6">A Era da Invisibilidade <span class="text-blue-600">Estratégica</span></h1>
+                    <p class="text-slate-600 text-lg leading-relaxed mb-6">
+                        Bem-vindo, futuro Gestor de Infraestrutura. Você chegou ao 5º semestre, o momento em que deixamos de olhar apenas para "como as coisas conectam" e passamos a perguntar "como as coisas performam e geram valor".
+                    </p>
+                    <div class="prose prose-slate text-slate-600 mb-8">
+                        <p>A gerência de redes moderna não é mais sobre saber qual cabo trocar. É sobre gerenciar a <strong>experiência do usuário digital</strong>. Em um mundo de computação em nuvem, borda (Edge Computing) e redes definidas por software (SDN), a rede tornou-se dinâmica demais para ser gerenciada manualmente.</p>
+                    </div>
+                </div>
+                <div class="md:col-span-5 bg-white p-8 rounded-3xl shadow-2xl border border-slate-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <i data-lucide="shield" size="120"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 relative z-10 flex items-center gap-2">
+                        <i data-lucide="target" class="text-blue-600"></i> Por que esta aula importa?
+                    </h3>
+                    <div class="space-y-6 relative z-10">
+                        <div class="flex gap-4">
+                            <div class="bg-blue-50 p-2 rounded-lg h-fit text-blue-600"><i data-lucide="zap" size="18"></i></div>
+                            <p class="text-sm text-slate-600"><strong>Diferenciação:</strong> Técnicos existem muitos. Gestores que entendem impacto financeiro e SLA são raros.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="bg-blue-50 p-2 rounded-lg h-fit text-blue-600"><i data-lucide="trending-up" size="18"></i></div>
+                            <p class="text-sm text-slate-600"><strong>Salários:</strong> Analistas de Monitoramento e NOC Sênior têm salários até 40% maiores que o suporte N2.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="bg-blue-50 p-2 rounded-lg h-fit text-blue-600"><i data-lucide="cpu" size="18"></i></div>
+                            <p class="text-sm text-slate-600"><strong>Automação:</strong> Você aprenderá a fazer o software trabalhar para você, não o contrário.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: Detalhamento do Planejamento (DDL) -->
+        <section id="page-2" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-8 flex items-center gap-3">
+                <i data-lucide="list-checks" class="text-blue-600"></i> Plano de Voo: Semestre 2026/1
+            </h2>
+            
+            <div class="space-y-6">
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">A</span>
+                        Fase de Fundamentos e Protocolos
+                    </h3>
+                    <p class="text-slate-600 text-sm mb-6">Onde entenderemos as regras do jogo. Sem o protocolo, não há conversa.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-blue-500">
+                            <span class="font-bold text-sm block mb-1">SNMP v1, v2c e v3</span>
+                            <span class="text-xs text-slate-500">A espinha dorsal da gerência. MIBs, OIDs e Traps.</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-blue-500">
+                            <span class="font-bold text-sm block mb-1">Modelo OSI e Camada de Gerência</span>
+                            <span class="text-xs text-slate-500">Onde a gerência se encaixa na pilha TCP/IP?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">B</span>
+                        Plataformas de Observabilidade
+                    </h3>
+                    <p class="text-slate-600 text-sm mb-6">Mão na massa com softwares reais utilizados pelo mercado global.</p>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="p-4 border rounded-xl hover:bg-blue-50 transition-colors">
+                            <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="activity" size="16"></i> Zabbix 7.0</div>
+                            <span class="text-xs text-slate-500">Monitoramento distribuído, proxies e automação.</span>
+                        </div>
+                        <div class="p-4 border rounded-xl hover:bg-emerald-50 transition-colors">
+                            <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="eye" size="16"></i> Nagios</div>
+                            <span class="text-xs text-slate-500">Gerência de disponibilidade e alertas críticos.</span>
+                        </div>
+                        <div class="p-4 border rounded-xl hover:bg-orange-50 transition-colors">
+                            <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="bar-chart-3" size="16"></i> Cacti/Grafana</div>
+                            <span class="text-xs text-slate-500">Dashboards executivos e análise histórica.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: FCAPS Profundo - Parte 1 -->
+        <section id="page-3" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-4">Teoria Imersiva: O Framework FCAPS</h2>
+            <p class="text-slate-600 mb-10 leading-relaxed">
+                Criado pela ISO para gerenciar redes de telecomunicações, o modelo FCAPS é o alicerce de qualquer profissional de Redes. Ele divide a complexidade da rede em 5 silos gerenciáveis.
+            </p>
+            
+            <div class="space-y-8">
+                <!-- F & C -->
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg relative overflow-hidden group">
+                        <div class="absolute -right-4 -bottom-4 text-red-100 group-hover:scale-110 transition-transform">
+                            <i data-lucide="flame" size="120"></i>
+                        </div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-red-500 p-2 rounded-xl text-white"><i data-lucide="alert-circle"></i></div>
+                            <h3 class="text-2xl font-black text-slate-800">Fault</h3>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6 font-medium">A Gerência de Falhas é o "Modo Sobrevivência".</p>
+                        <div class="bg-slate-50 p-4 rounded-xl text-sm border-l-4 border-red-500 italic mb-4">
+                            "Descobrir que o roteador de Manaus caiu antes que o RH daquela unidade ligue reclamando."
+                        </div>
+                        <div class="text-xs text-slate-500 space-y-2 mt-4 block">
+                            <p class="font-bold text-slate-800">Processos Técnicos:</p>
+                            <p>• Detecção (Traps SNMP)</p>
+                            <p>• Isolamento (Root Cause Analysis)</p>
+                            <p>• Correção (Tratamento de Incidentes)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg relative overflow-hidden group">
+                        <div class="absolute -right-4 -bottom-4 text-blue-100 group-hover:scale-110 transition-transform">
+                            <i data-lucide="database" size="120"></i>
+                        </div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-blue-500 p-2 rounded-xl text-white"><i data-lucide="settings"></i></div>
+                            <h3 class="text-2xl font-black text-slate-800">Configuration</h3>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6 font-medium">O Inventário é o seu mapa do tesouro.</p>
+                        <div class="bg-slate-50 p-4 rounded-xl text-sm border-l-4 border-blue-500 italic mb-4">
+                            "Saber exatamente qual versão de Firmware roda em cada switch da rede."
+                        </div>
+                        <p class="text-xs text-slate-500">Foca no controle de versões e provisionamento de novos serviços. Sem o 'C' do FCAPS, o Troubleshooting vira um jogo de adivinhação.</p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-900 text-white p-6 rounded-2xl flex items-center gap-6">
+                    <i data-lucide="lightbulb" class="text-yellow-400 flex-shrink-0" size="40"></i>
+                    <div>
+                        <h4 class="font-bold">Dica do Designer Instrucional:</h4>
+                        <p class="text-sm opacity-80">Pense no FCAPS como as especialidades médicas: Clínico Geral (Fault), Nutricionista (Performance), Geriatra (Configuration)... todos cuidam do mesmo corpo (Rede).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: FCAPS Profundo - Parte 2 -->
+        <section id="page-4" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-8">FCAPS: O Triângulo de Ouro (A, P, S)</h2>
+            
+            <div class="grid gap-6">
+                <!-- Accounting -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-6">
+                    <div class="bg-emerald-100 text-emerald-600 p-4 rounded-2xl flex items-center justify-center h-20 w-20 flex-shrink-0">
+                        <i data-lucide="calculator" size="32"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">A - Accounting (Contabilização)</h3>
+                        <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+                            Muitos negligenciam esta área, mas ela é vital para a saúde financeira. Aqui monitoramos quotas de consumo. Se o setor de Marketing está consumindo 80% do link de internet, o Accounting deve reportar isso para que o custo seja devidamente alocado ou o serviço limitado. 
+                            <strong>Exemplo prático:</strong> Definir cobrança por tráfego em provedores de nuvem (AWS/Azure).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Performance -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-6">
+                    <div class="bg-orange-100 text-orange-600 p-4 rounded-2xl flex items-center justify-center h-20 w-20 flex-shrink-0">
+                        <i data-lucide="gauge" size="32"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">P - Performance (Desempenho)</h3>
+                        <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+                            A diferença entre "Estou conectado" e "A rede está voando". Aqui olhamos para métricas como <strong>Throughput, Latência, Jitter e Packet Loss</strong>. Performance é proatividade: detectar que um link vai saturar daqui a 2 meses se o crescimento continuar no ritmo atual.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-6">
+                    <div class="bg-indigo-100 text-indigo-600 p-4 rounded-2xl flex items-center justify-center h-20 w-20 flex-shrink-0">
+                        <i data-lucide="shield-alert" size="32"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">S - Security (Segurança)</h3>
+                        <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+                            Monitoramento de logs de acesso, detecção de intrusão e integridade de arquivos. A gerência de segurança garante que os ativos de rede não sejam usados contra a própria empresa. Inclui monitoramento de acessos não autorizados em portas de console e alterações de senhas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: O Debate Reativo vs Pró-ativo -->
+        <section id="page-5" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-6">Administrador Estrategista vs. Técnico Bombeiro</h2>
+            
+            <div class="prose prose-slate max-w-none text-slate-600 mb-10">
+                <p>O <strong>Técnico Bombeiro</strong> vive em um estado constante de ansiedade. Sua rotina é pautada pelo susto. Quando a rede para, ele é o herói que conserta, mas ninguém percebe que a rede parou porque ele não tinha gerência. Ele gasta 90% do tempo reagindo e 10% planejando.</p>
+                <p>O <strong>Administrador Estrategista</strong> prefere ser "invisível". Se a rede funciona perfeitamente, ninguém lembra que ele existe — e é exatamente assim que ele gosta. Ele usa dashboards para provar à diretoria que o investimento em novos switches reduziu o tempo de resposta das aplicações em 30%.</p>
+            </div>
+
+            <div class="bg-slate-900 rounded-3xl p-10 text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="coins" class="text-yellow-400"></i> O Custo do Downtime (Rede Fora)
+                    </h3>
+                    <p class="text-slate-400 mb-8 italic">Simulação de impacto financeiro em uma rede corporativa média (1 hora de interrupção):</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="p-6 bg-white/5 rounded-2xl border border-white/10 text-center">
+                            <span class="block text-xs uppercase tracking-widest text-slate-500 mb-2 font-bold">Produtividade</span>
+                            <span class="text-3xl font-black text-white">R$ 15.000</span>
+                            <span class="block text-xs text-slate-400 mt-2">100 funcionários ociosos por 1h (média R$ 150/h de custo empresa)</span>
+                        </div>
+                        <div class="p-6 bg-white/5 rounded-2xl border border-white/10 text-center">
+                            <span class="block text-xs uppercase tracking-widest text-slate-500 mb-2 font-bold">Vendas Perdidas</span>
+                            <span class="text-3xl font-black text-emerald-400">R$ 45.000</span>
+                            <span class="block text-xs text-slate-400 mt-2">Média de transações não realizadas durante a falha</span>
+                        </div>
+                        <div class="p-6 bg-white/5 rounded-2xl border border-white/10 text-center">
+                            <span class="block text-xs uppercase tracking-widest text-slate-500 mb-2 font-bold">Total/Hora</span>
+                            <span class="text-4xl font-black text-red-500 italic">R$ 60.000</span>
+                            <span class="block text-xs text-slate-400 mt-2 font-bold">Sem contar danos à imagem e perda de clientes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute right-0 bottom-0 opacity-5 p-10">
+                    <i data-lucide="trending-down" size="300"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 6: Tendências de Mercado 2026 -->
+        <section id="page-6" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-8">Tendências: Gerência na Era da IA</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="p-8 bg-gradient-to-br from-indigo-50 to-white rounded-3xl border border-indigo-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-indigo-600 p-2 rounded-lg text-white"><i data-lucide="brain"></i></div>
+                        <h4 class="font-bold text-slate-800">AIOps (Artificial Intelligence for Operations)</h4>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Em 2026, os sistemas de gerência não apenas alertam. Eles aprendem o padrão da sua rede (baselining) e identificam anomalias que o olho humano demoraria horas para notar. Imagine o sistema avisando: "O tráfego de saída está 20% acima do normal para uma segunda-feira à tarde".
+                    </p>
+                </div>
+
+                <div class="p-8 bg-gradient-to-br from-blue-50 to-white rounded-3xl border border-blue-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-blue-600 p-2 rounded-lg text-white"><i data-lucide="cloud"></i></div>
+                        <h4 class="font-bold text-slate-800">Observabilidade Full-Stack</h4>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Não basta saber se o link está up. Precisamos saber se a aplicação do usuário está respondendo rápido, mesmo que ela esteja rodando em um Kubernetes na AWS ou em uma borda remota. A infraestrutura agora serve à aplicação.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-12 bg-white p-8 rounded-3xl border border-slate-200">
+                <h4 class="font-black text-slate-800 mb-6 uppercase tracking-widest text-sm text-center">Palavras-Chave do Dia</h4>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <span class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-600 hover:bg-blue-100 hover:text-blue-700 cursor-help transition-all">SLA (Service Level Agreement)</span>
+                    <span class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-600 hover:bg-blue-100 hover:text-blue-700 cursor-help transition-all">MTTR (Mean Time To Repair)</span>
+                    <span class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-600 hover:bg-blue-100 hover:text-blue-700 cursor-help transition-all">Throughput</span>
+                    <span class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-600 hover:bg-blue-100 hover:text-blue-700 cursor-help transition-all">Uptime</span>
+                    <span class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-600 hover:bg-blue-100 hover:text-blue-700 cursor-help transition-all">Baseline</span>
+                    <span class="px-4 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-600 hover:bg-blue-100 hover:text-blue-700 cursor-help transition-all">MIB (Management Information Base)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 7: Atividades de Fixação Lúdicas -->
+        <section id="page-7" class="page-transition hidden-page">
+            <h2 class="text-3xl font-black mb-8 flex items-center gap-3">
+                <i data-lucide="swords" class="text-red-500"></i> Arena de Fixação
+            </h2>
+            
+            <div class="space-y-8">
+                <!-- Desafio 1 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm">01</span>
+                        Cenário: Onde está o erro?
+                    </h4>
+                    <p class="text-slate-600 mb-6 italic">Classifique o incidente de acordo com o pilar FCAPS correspondente:</p>
+                    
+                    <div class="space-y-4">
+                        <div class="p-6 border-2 border-slate-100 rounded-2xl hover:border-blue-200 transition-all">
+                            <p class="text-sm font-semibold text-slate-700 mb-4">"O setor financeiro diz que o portal de notas fiscais demora 2 minutos para abrir, mas antes abria em 5 segundos."</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="checkArena(this, 'Performance')" class="px-6 py-2 rounded-xl bg-slate-100 text-xs font-bold hover:bg-blue-600 hover:text-white transition">Performance</button>
+                                <button onclick="checkArena(this, 'Fault')" class="px-6 py-2 rounded-xl bg-slate-100 text-xs font-bold hover:bg-blue-600 hover:text-white transition">Fault</button>
+                                <button onclick="checkArena(this, 'Security')" class="px-6 py-2 rounded-xl bg-slate-100 text-xs font-bold hover:bg-blue-600 hover:text-white transition">Security</button>
+                            </div>
+                        </div>
+
+                        <div class="p-6 border-2 border-slate-100 rounded-2xl hover:border-blue-200 transition-all">
+                            <p class="text-sm font-semibold text-slate-700 mb-4">"Você notou 15 mil tentativas de acesso frustradas no roteador central vindas de um IP da Estônia."</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="checkArena(this, 'Accounting')" class="px-6 py-2 rounded-xl bg-slate-100 text-xs font-bold hover:bg-blue-600 hover:text-white transition">Accounting</button>
+                                <button onclick="checkArena(this, 'Configuration')" class="px-6 py-2 rounded-xl bg-slate-100 text-xs font-bold hover:bg-blue-600 hover:text-white transition">Configuration</button>
+                                <button onclick="checkArena(this, 'Security')" class="px-6 py-2 rounded-xl bg-slate-100 text-xs font-bold hover:bg-blue-600 hover:text-white transition">Security</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desafio 2 -->
+                <div class="bg-slate-900 p-8 rounded-3xl text-white shadow-xl">
+                    <h4 class="font-bold mb-4 flex items-center gap-2">
+                        <i data-lucide="map-pin" class="text-emerald-400"></i> Desafio: Mapeando Ativos
+                    </h4>
+                    <p class="text-sm text-slate-400 mb-6 leading-relaxed">Selecione o que você monitoraria em um <strong>No-Break (UPS) Industrial</strong> para evitar uma queda catastrófica do Data Center:</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 cursor-pointer transition">
+                            <input type="checkbox" id="item1" class="w-5 h-5 rounded border-gray-300">
+                            <label for="item1" class="text-sm font-medium">Temperatura das baterias</label>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 cursor-pointer transition">
+                            <input type="checkbox" id="item2" class="w-5 h-5 rounded border-gray-300">
+                            <label for="item2" class="text-sm font-medium">Carga de CPU do roteador</label>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 cursor-pointer transition">
+                            <input type="checkbox" id="item3" class="w-5 h-5 rounded border-gray-300">
+                            <label for="item3" class="text-sm font-medium">Nível de autonomia restante</label>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 cursor-pointer transition">
+                            <input type="checkbox" id="item4" class="w-5 h-5 rounded border-gray-300">
+                            <label for="item4" class="text-sm font-medium">Tensão de entrada (Voltagem)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 8: Fechamento e Próximos Passos -->
+        <section id="page-8" class="page-transition hidden-page text-center">
+            <div class="max-w-3xl mx-auto">
+                <div class="inline-block p-4 bg-blue-100 text-blue-600 rounded-full mb-8">
+                    <i data-lucide="graduation-cap" size="48"></i>
+                </div>
+                <h2 class="text-4xl font-black text-slate-900 mb-6">Material 01 Finalizado!</h2>
+                <p class="text-slate-600 text-lg mb-10 leading-relaxed">
+                    Você agora possui a base conceitual para entender qualquer sistema de monitoramento no planeta. Na próxima aula, vamos dissecar o protocolo que torna tudo isso possível: o SNMP.
+                </p>
+                <div class="grid md:grid-cols-2 gap-6 text-left mb-12">
+                    <div class="p-8 bg-white rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <h4 class="font-bold text-slate-800 mb-4 uppercase tracking-tighter flex items-center gap-2">
+                            <i data-lucide="book-open" size="18" class="text-blue-500"></i> Referências
+                        </h4>
+                        <ul class="text-sm space-y-4 text-slate-600 relative z-10">
+                            <li>• <strong>Kurose & Ross:</strong> Cap. 9 - Gerência de Redes.</li>
+                            <li>• <strong>Douglas Comer:</strong> Redes de Computadores e Internet.</li>
+                            <li>• <strong>RFC 3411:</strong> Arquitetura para SNMP.</li>
+                        </ul>
+                    </div> 
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="window.print()" class="px-8 py-4 bg-slate-800 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-700 transition">
+                        <i data-lucide="printer"></i> Baixar Material Completo (PDF)
+                    </button>
+                    <button onclick="changePage(1-currentPage)" class="px-8 py-4 border-2 border-slate-200 text-slate-600 rounded-2xl font-bold hover:bg-slate-50 transition">
+                        Recomeçar Material
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 w-full glass-effect border-t border-slate-200 p-4 z-50 no-print">
+        <div class="max-w-5xl mx-auto flex justify-between items-center gap-4">
+            <button id="prevBtn" onclick="changePage(-1)" class="flex-1 max-w-[140px] py-4 bg-slate-100 text-slate-500 rounded-2xl font-black transition disabled:opacity-20 flex items-center justify-center gap-2">
+                <i data-lucide="chevron-left"></i> <span class="hidden sm:inline">ANTERIOR</span>
+            </button>
+            
+            <div class="hidden md:flex flex-col items-center">
+                <span id="nav-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status da Aula</span>
+                <div class="w-48 h-1 bg-slate-200 rounded-full overflow-hidden">
+                    <div id="nav-progress" class="h-full bg-blue-600 transition-all duration-500 w-0"></div>
+                </div>
+            </div>
+
+            <button id="nextBtn" onclick="changePage(1)" class="flex-1 max-w-[220px] py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl shadow-blue-200 hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                <span id="next-label">PRÓXIMO PASSO</span> <i data-lucide="chevron-right"></i>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // State Management
+        let currentPage = 1;
+        const totalPages = 8;
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Create Indicators
+        const indicatorsContainer = document.getElementById('step-indicators');
+        for (let i = 1; i <= totalPages; i++) {
+            const dot = document.createElement('div');
+            dot.className = `step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-500 cursor-pointer ${i === 1 ? 'active' : ''}`;
+            dot.id = `dot-${i}`;
+            dot.onclick = () => { currentPage = i; updateUI(); };
+            indicatorsContainer.appendChild(dot);
+        }
+
+        function updateUI() {
+            // Update pages visibility
+            for (let i = 1; i <= totalPages; i++) {
+                const page = document.getElementById(`page-${i}`);
+                const dot = document.getElementById(`dot-${i}`);
+                
+                if (i === currentPage) {
+                    page.classList.remove('hidden-page');
+                    page.classList.add('active-page');
+                    dot.classList.add('active');
+                } else {
+                    page.classList.add('hidden-page');
+                    page.classList.remove('active-page');
+                    dot.classList.remove('active');
+                }
+            }
+
+            // Update Counter
+            document.getElementById('page-counter').innerText = `Pág ${currentPage}/${totalPages}`;
+
+            // Update Navigation Progress
+            const progress = ((currentPage - 1) / (totalPages - 1)) * 100;
+            document.getElementById('nav-progress').style.width = `${progress}%`;
+
+            // Update Buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const nextLabel = document.getElementById('next-label');
+            
+            prevBtn.disabled = currentPage === 1;
+            
+            if (currentPage === totalPages) {
+                nextLabel.innerText = 'CONCLUIR CURSO';
+                nextBtn.classList.replace('bg-blue-600', 'bg-emerald-600');
+            } else if (currentPage === 1) {
+                nextLabel.innerText = 'INICIAR ESTUDO';
+                nextBtn.classList.replace('bg-emerald-600', 'bg-blue-600');
+            } else {
+                nextLabel.innerText = 'PRÓXIMO PASSO';
+                nextBtn.classList.replace('bg-emerald-600', 'bg-blue-600');
+            }
+
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changePage(dir) {
+            currentPage += dir;
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            updateUI();
+        }
+
+        function checkArena(btn, type) {
+            if (type === 'Performance' || type === 'Security') {
+                btn.classList.add('bg-emerald-500', 'text-white');
+                btn.innerHTML = "CERTO ✓";
+            } else {
+                btn.classList.add('bg-red-500', 'text-white');
+                btn.innerHTML = "ERRO ✗";
+            }
+            btn.disabled = true;
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') changePage(1);
+            if (e.key === 'ArrowLeft') changePage(-1);
+        });
+
+        // Initialize UI
+        updateUI();
+    </script>
+</body>
+</html>

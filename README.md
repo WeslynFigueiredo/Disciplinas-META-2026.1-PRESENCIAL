@@ -1,0 +1,1 @@
+# Disciplinas-META-2026.1-PRESENCIAL

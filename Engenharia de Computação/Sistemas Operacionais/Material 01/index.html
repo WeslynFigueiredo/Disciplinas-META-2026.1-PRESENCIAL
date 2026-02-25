@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Técnico: Sistemas Operacionais - Aula 01</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .sidebar-item.active {
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 0.5rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 1);
+        }
+
+        .engineering-note {
+            border-left: 5px solid var(--accent);
+            background-color: #fffbeb;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: #cbd5e1;
+            transform: translateX(-50%);
+        }
+
+        .page-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden-answer {
+            filter: blur(4px);
+            transition: filter 0.3s;
+            cursor: pointer;
+        }
+
+        .hidden-answer:hover {
+            filter: blur(0);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header / Logo -->
+    <header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded">
+                    <img src="Logo Centro Universitário META.png" alt="Logo META" class="h-10 w-auto object-contain">
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-tight">META - CENTRO UNIVERSITÁRIO</h1>
+                    <p class="text-xs uppercase tracking-widest text-blue-200">Engenharia de Computação - 5º Semestre</p>
+                </div>
+            </div>
+            <div class="hidden md:block text-right">
+                <p class="text-sm font-semibold">Disciplina: Sistemas Operacionais</p>
+                <p class="text-xs text-blue-200">Prof. Weslyn Ivan Chaves Figueiredo</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 container mx-auto gap-6 p-4 md:p-8">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 shrink-0 hidden lg:block">
+            <nav class="sticky top-24 space-y-2">
+                <p class="text-xs font-bold text-gray-500 uppercase px-4 mb-2">Sumário Executivo</p>
+                <button onclick="showPage('intro')" class="sidebar-item active w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-intro">
+                    <i class="fas fa-handshake"></i> Boas-Vindas
+                </button>
+                <button onclick="showPage('metodologia')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-metodologia">
+                    <i class="fas fa-graduation-cap"></i> Metodologia PBL
+                </button>
+                <button onclick="showPage('definicao')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-definicao">
+                    <i class="fas fa-layers"></i> O que é um SO?
+                </button>
+                <button onclick="showPage('historico')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-historico">
+                    <i class="fas fa-history"></i> Evolução Histórica
+                </button>
+                <button onclick="showPage('cli-gui')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-cli-gui">
+                    <i class="fas fa-terminal"></i> CLI vs GUI
+                </button>
+                <button onclick="showPage('atividades')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-atividades">
+                    <i class="fas fa-tasks"></i> Desafios Práticos
+                </button>
+                <button onclick="showPage('referencias')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-referencias">
+                    <i class="fas fa-book"></i> Referências
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 max-w-4xl glass-card rounded-xl shadow-sm p-6 md:p-12 min-h-[80vh]">
+            
+            <!-- PAGE: INTRO -->
+            <section id="page-intro" class="page-content active">
+                <div class="flex items-center gap-4 mb-8">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Material 1</span>
+                    <h2 class="text-3xl font-bold text-slate-800 italic">Boas-Vindas e Contrato de Aprendizagem</h2>
+                </div>
+                
+                <p class="text-lg text-slate-700 mb-6 leading-relaxed">
+                    Caro acadêmico de Engenharia de Computação, seja bem-vindo à disciplina de <strong>Sistemas Operacionais</strong>. 
+                    Este é um dos pilares da sua formação. Como engenheiro, você não deve apenas "usar" um sistema; você deve ser capaz de compreender 
+                    as entranhas da máquina para extrair dela o máximo desempenho.
+                </p>
+
+                <div class="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-8">
+                    <h3 class="text-blue-900 font-bold mb-3 flex items-center gap-2">
+                        <i class="fas fa-bullseye"></i> Nosso Objetivo Geral
+                    </h3>
+                    <p class="text-blue-800">
+                        Capacitar você a <strong>projetar e otimizar</strong> a interação entre hardware e software, dominando como o kernel gerencia 
+                        recursos finitos para múltiplos usuários e processos de forma segura e eficiente.
+                    </p>
+                </div>
+
+                <h4 class="text-xl font-bold text-slate-800 mb-4">O Compromisso de Engenharia</h4>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex gap-4">
+                        <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                        <span><strong>Abstração:</strong> Aprenderemos como o SO esconde a complexidade do hardware.</span>
+                    </li>
+                    <li class="flex gap-4">
+                        <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                        <span><strong>Eficiência:</strong> Analisaremos algoritmos de escalonamento onde cada milissegundo conta.</span>
+                    </li>
+                    <li class="flex gap-4">
+                        <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                        <span><strong>Segurança:</strong> Entenderemos como o sistema impede que um erro de programa destrua o hardware ou invada dados alheios.</span>
+                    </li>
+                </ul>
+
+                <div class="engineering-note">
+                    <strong>Dica de Engenharia:</strong> Sistemas Operacionais são o maior exemplo de sistemas complexos construídos pelo homem. 
+                    Nesta disciplina, você deixará de ser um consumidor de tecnologia para se tornar um arquiteto.
+                </div>
+                
+                <div class="flex justify-end mt-12">
+                    <button onclick="showPage('metodologia')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Metodologia PBL <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: METODOLOGIA -->
+            <section id="page-metodologia" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">A Jornada PBL (Aprendizagem Baseada em Problemas)</h2>
+                
+                <p class="mb-6">
+                    Esqueça as aulas meramente expositivas. No 5º semestre de Engenharia, você será desafiado. Nossa disciplina segue o modelo <strong>PBL</strong>.</p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="border p-5 rounded-lg">
+                        <h4 class="font-bold text-blue-700 mb-2"><i class="fas fa-flask"></i> Foco Laboratorial</h4>
+                        <p class="text-sm">Você aprenderá instalando. Configuraremos Máquinas Virtuais (VirtualBox), manipularemos partições reais e simularemos ataques para testar a segurança.</p>
+                    </div>
+                    <div class="border p-5 rounded-lg">
+                        <h4 class="font-bold text-blue-700 mb-2"><i class="fas fa-cogs"></i> O PROJETI</h4>
+                        <p class="text-sm">Ao final, você deverá apresentar um <strong>Servidor Customizado</strong>, configurado do zero, atendendo a requisitos reais de rede e performance.</p>
+                    </div>
+                </div>
+
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('intro')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('definicao')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: O que é um SO? <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: DEFINICAO -->
+            <section id="page-definicao" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Definição: O "Mestre de Obras" do Computador</h2>
+                
+                <p class="mb-8">
+                    Um Sistema Operacional (SO) é o software mais importante que roda em um computador. Ele gerencia a memória e os processos, 
+                    bem como todo o software e hardware. Sem ele, você teria que escrever código em binário para cada pequena ação (como salvar um arquivo).
+                </p>
+
+                <div class="flex flex-col items-center mb-12">
+                    <div class="w-full max-w-md space-y-2">
+                        <div class="bg-blue-200 p-3 text-center font-bold border-2 border-blue-400 rounded">USUÁRIO</div>
+                        <div class="text-center"><i class="fas fa-arrow-down"></i></div>
+                        <div class="bg-green-200 p-3 text-center font-bold border-2 border-green-400 rounded">APLICAÇÕES (Navegador, Games)</div>
+                        <div class="text-center"><i class="fas fa-arrow-down"></i></div>
+                        <div class="bg-red-600 p-5 text-center font-bold text-white border-2 border-red-800 rounded-lg shadow-xl relative">
+                            SISTEMA OPERACIONAL (KERNEL)
+                            <span class="absolute -right-24 top-2 text-xs bg-yellow-100 text-yellow-800 p-1 rounded border border-yellow-300 hidden md:block">Abstração e Gerência</span>
+                        </div>
+                        <div class="text-center"><i class="fas fa-arrow-down"></i></div>
+                        <div class="bg-slate-700 p-3 text-center font-bold text-white border-2 border-black rounded">HARDWARE (CPU, RAM, DISCO)</div>
+                    </div>
+                </div>
+
+                <h4 class="text-xl font-bold text-slate-800 mb-6">As 4 Funções Fundamentais</h4>
+                
+                <div class="space-y-6">
+                    <div class="flex gap-4 p-4 hover:bg-slate-50 rounded-lg transition">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center shrink-0">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-bold">Gerenciamento de Processos</h5>
+                            <p class="text-sm text-slate-600">O SO decide qual programa usa a CPU agora, por quanto tempo e com qual prioridade. Sem isso, um programa travado congelaria toda a máquina.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 p-4 hover:bg-slate-50 rounded-lg transition">
+                        <div class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center shrink-0">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-bold">Gerenciamento de Memória</h5>
+                            <p class="text-sm text-slate-600">Alocação de espaços na RAM para que os programas não "atropelem" os dados uns dos outros. Inclui a poderosa Memória Virtual.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 p-4 hover:bg-slate-50 rounded-lg transition">
+                        <div class="bg-teal-600 text-white w-12 h-12 rounded-full flex items-center justify-center shrink-0">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-bold">Sistemas de Arquivos</h5>
+                            <p class="text-sm text-slate-600">Organização lógica dos dados. O SO transforma trilhas e setores físicos do disco em "pastas" e "arquivos" compreensíveis.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 p-4 hover:bg-slate-50 rounded-lg transition">
+                        <div class="bg-orange-600 text-white w-12 h-12 rounded-full flex items-center justify-center shrink-0">
+                            <i class="fas fa-print"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-bold">Gerenciamento de E/S (Entrada/Saída)</h5>
+                            <p class="text-sm text-slate-600">Comunicação com dispositivos externos através de Drivers. O SO padroniza como o computador conversa com o teclado ou a impressora.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('metodologia')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('historico')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Evolução Histórica <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: HISTORICO -->
+            <section id="page-historico" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">O Túnel do Tempo dos Bits</h2>
+                
+                <p class="mb-8">A evolução dos Sistemas Operacionais caminha de mãos dadas com a evolução do Hardware. Vamos analisar as quatro gerações clássicas:</p>
+
+                <!-- 1a GERACAO -->
+                <div class="mb-12 border-l-4 border-slate-300 pl-6 relative">
+                    <div class="absolute -left-3 top-0 w-5 h-5 bg-slate-400 rounded-full border-4 border-white"></div>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">1945 - 1955</span>
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">1ª Geração: Tubos de Vácuo (Válvulas)</h3>
+                    <p class="text-sm mb-4"><strong>Cenário:</strong> Máquinas colossais que ocupavam salas inteiras. Não havia "Sistema Operacional".</p>
+                    <ul class="text-sm space-y-2 list-disc ml-5 mb-4">
+                        <li>Programação via painéis de plugues e chaves físicas.</li>
+                        <li>Linguagem de máquina absoluta.</li>
+                        <li>Apenas uma pessoa usava por vez.</li>
+                    </ul>
+                    <div class="bg-slate-100 p-3 rounded italic text-xs text-slate-600">
+                        "Se um tubo de vácuo queimasse (e eles queimavam toda hora), o processamento parava."
+                    </div>
+                </div>
+
+                <!-- 2a GERACAO -->
+                <div class="mb-12 border-l-4 border-blue-400 pl-6 relative">
+                    <div class="absolute -left-3 top-0 w-5 h-5 bg-blue-500 rounded-full border-4 border-white"></div>
+                    <span class="text-xs font-bold text-blue-500 uppercase tracking-tighter">1955 - 1965</span>
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">2ª Geração: Transistores e Sistemas Batch</h3>
+                    <p class="text-sm mb-4"><strong>Cenário:</strong> O surgimento dos computadores mainframe (ex: IBM 7094).</p>
+                    <ul class="text-sm space-y-2 list-disc ml-5 mb-4">
+                        <li><strong>Sistemas em Lote (Batch):</strong> Programas gravados em cartões perfurados. O SO lia uma pilha de cartões e executava um por um.</li>
+                        <li>Surgimento do programador vs operador.</li>
+                        <li>Linguagens: FORTRAN e Assembly.</li>
+                    </ul>
+                </div>
+
+                <!-- 3a GERACAO -->
+                <div class="mb-12 border-l-4 border-indigo-500 pl-6 relative">
+                    <div class="absolute -left-3 top-0 w-5 h-5 bg-indigo-600 rounded-full border-4 border-white"></div>
+                    <span class="text-xs font-bold text-indigo-500 uppercase tracking-tighter">1965 - 1980</span>
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">3ª Geração: Circuitos Integrados (ICs)</h3>
+                    <p class="text-sm mb-4"><strong>Cenário:</strong> A era da Multiprogramação e do Compartilhamento de Tempo.</p>
+                    <ul class="text-sm space-y-2 list-disc ml-5 mb-4">
+                        <li><strong>Multiprogramação:</strong> Vários jobs na memória ao mesmo tempo. Enquanto um faz I/O, a CPU processa outro.</li>
+                        <li><strong>Time-Sharing:</strong> Usuários em terminais remotos compartilhando a mesma CPU.</li>
+                        <li>Nascimento do <strong>UNIX</strong>.</li>
+                    </ul>
+                </div>
+
+                <!-- 4a GERACAO -->
+                <div class="mb-12 border-l-4 border-orange-400 pl-6 relative">
+                    <div class="absolute -left-3 top-0 w-5 h-5 bg-orange-500 rounded-full border-4 border-white"></div>
+                    <span class="text-xs font-bold text-orange-500 uppercase tracking-tighter">1980 - Presente</span>
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">4ª Geração: Computadores Pessoais (PC)</h3>
+                    <p class="text-sm mb-4"><strong>Cenário:</strong> O computador em cima da mesa. Interface Gráfica (GUI) vira padrão.</p>
+                    <ul class="text-sm space-y-2 list-disc ml-5 mb-4">
+                        <li>Microsoft MS-DOS e Windows.</li>
+                        <li>MacOS e interfaces WIMP (Windows, Icons, Menus, Pointers).</li>
+                        <li>Sistemas de Rede e Internet integrados.</li>
+                    </ul>
+                </div>
+
+                <div class="engineering-note">
+                    <strong>Ponto de Reflexão:</strong> Atualmente vivemos a era dos sistemas <strong>Multicore, Móveis e Virtualizados</strong>. 
+                    Nesta disciplina, focaremos em como gerenciar essa enorme complexidade de hardware atual (64 núcleos, terabytes de memória) mantendo a estabilidade.
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('definicao')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('cli-gui')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: CLI vs GUI <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: CLI vs GUI -->
+            <section id="page-cli-gui" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">CLI vs GUI: A Interface com o Mundo</h2>
+                
+                <p class="mb-8">Um Sistema Operacional pode oferecer diferentes formas de interação. Para o usuário comum, a interface é o sistema. Para o engenheiro, a interface é apenas uma ferramenta.</p>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-slate-900 text-green-400 p-6 rounded-lg shadow-inner font-mono text-sm h-64 flex flex-col">
+                        <div class="flex gap-2 mb-4">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <p class="mb-2"># Terminal - CLI</p>
+                        <p class="mb-2">guest@meta_so:~$ sudo apt update</p>
+                        <p class="mb-2">[sudo] password for guest:</p>
+                        <p class="mb-2">Reading package lists... Done</p>
+                        <p class="mb-2">guest@meta_so:~$ ls -la /etc/network</p>
+                        <p class="mb-2">total 40</p>
+                        <p class="animate-pulse">_</p>
+                    </div>
+
+                    <div class="bg-white border p-4 rounded-lg shadow-md h-64 flex flex-col">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <span class="text-xs font-bold text-slate-500">Painel de Controle - GUI</span>
+                            <i class="fas fa-times text-slate-300"></i>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="bg-blue-100 p-3 rounded mb-1"><i class="fas fa-wifi text-blue-600"></i></div>
+                                <span class="text-[10px]">Rede</span>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-gray-100 p-3 rounded mb-1"><i class="fas fa-user text-gray-600"></i></div>
+                                <span class="text-[10px]">Usuários</span>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-red-100 p-3 rounded mb-1"><i class="fas fa-shield-alt text-red-600"></i></div>
+                                <span class="text-[10px]">Segurança</span>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <button class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded">Aplicar Alterações</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto mb-8">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-200 uppercase font-bold text-xs">
+                            <tr>
+                                <th class="px-4 py-3">Característica</th>
+                                <th class="px-4 py-3">CLI (Terminal)</th>
+                                <th class="px-4 py-3">GUI (Gráfica)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <tr>
+                                <td class="px-4 py-3 font-semibold">Facilidade de Uso</td>
+                                <td class="px-4 py-3">Difícil (Requer estudo)</td>
+                                <td class="px-4 py-3">Fácil (Intuitivo)</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold">Automação</td>
+                                <td class="px-4 py-3 text-green-700 font-bold">Excelente (Scripts)</td>
+                                <td class="px-4 py-3">Pobre (Limitada a cliques)</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold">Consumo de Recursos</td>
+                                <td class="px-4 py-3">Mínimo</td>
+                                <td class="px-4 py-3">Alto (Exige GPU/RAM)</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold">Uso Profissional</td>
+                                <td class="px-4 py-3">Engenheiros, Servidores, DevOps</td>
+                                <td class="px-4 py-3">Usuários finais, Designers</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-blue-900 text-white p-6 rounded-lg">
+                    <h4 class="font-bold mb-4 italic flex items-center gap-2">
+                        <i class="fas fa-lightbulb text-yellow-300"></i> Desafio de Engenharia: CLI ou GUI?
+                    </h4>
+                    <p class="text-sm mb-4">Imagine que você precisa criar 1.000 pastas numeradas de 1 a 1.000. No GUI, você teria que clicar e renomear 1.000 vezes. Qual comando terminal você usaria no Linux para resolver isso em 2 segundos?</p>
+                    <div class="bg-black/50 p-2 rounded text-xs font-mono mb-4 text-green-300">
+                        mkdir pasta_{1..1000}
+                    </div>
+                    <p class="text-xs text-blue-200">Percebe a força da CLI para um Engenheiro? É sobre eficiência em escala.</p>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('historico')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('atividades')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Desafios Práticos <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: ATIVIDADES -->
+            <section id="page-atividades" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Laboratório Virtual: Verificação de Conhecimento</h2>
+                
+                <!-- Desafio 1 -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">1. Desafio: Linha do Tempo</h3>
+                    <p class="mb-4">Arraste mentalmente (ou anote) as tecnologias para suas gerações:</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                        <div class="bg-white border-2 border-dashed border-slate-300 p-2 rounded">Multiprogramação</div>
+                        <div class="bg-white border-2 border-dashed border-slate-300 p-2 rounded">Cartões Perfurados</div>
+                        <div class="bg-white border-2 border-dashed border-slate-300 p-2 rounded">Windows 11</div>
+                        <div class="bg-white border-2 border-dashed border-slate-300 p-2 rounded">Painéis de Plugues</div>
+                    </div>
+                    <div class="mt-4 p-4 bg-green-50 rounded border border-green-200 text-xs">
+                        <strong>Gabarito (Passe o mouse para ver):</strong> 
+                        <span class="hidden-answer">1ª Geração: Plugues | 2ª Geração: Cartões | 3ª Geração: Multiprogramação | 4ª Geração: Windows 11</span>
+                    </div>
+                </div>
+
+                <!-- Desafio 2 -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">2. Quiz: O Gerente de Recursos</h3>
+                    <p class="mb-6">Identifique qual subsistema do SO resolve cada problema abaixo:</p>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-slate-50 p-4 rounded-lg border">
+                            <p class="font-bold text-sm mb-2">Problema A: "O computador travou porque o Chrome abriu 50 abas e a RAM acabou."</p>
+                            <div class="flex gap-2">
+                                <button onclick="checkQuiz(this, false)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Gerente de Processos</button>
+                                <button onclick="checkQuiz(this, true)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Gerente de Memória</button>
+                                <button onclick="checkQuiz(this, false)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Sist. de Arquivos</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-lg border">
+                            <p class="font-bold text-sm mb-2">Problema B: "Dois programas tentaram enviar dados para a impressora ao mesmo tempo."</p>
+                            <div class="flex gap-2">
+                                <button onclick="checkQuiz(this, false)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Gerente de Memória</button>
+                                <button onclick="checkQuiz(this, false)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Sist. de Arquivos</button>
+                                <button onclick="checkQuiz(this, true)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Gerente de E/S</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-lg border">
+                            <p class="font-bold text-sm mb-2">Problema C: "Preciso garantir que o Spotify continue tocando mesmo enquanto o Windows instala atualizações pesadas."</p>
+                            <div class="flex gap-2">
+                                <button onclick="checkQuiz(this, true)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Gerente de Processos</button>
+                                <button onclick="checkQuiz(this, false)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Gerente de E/S</button>
+                                <button onclick="checkQuiz(this, false)" class="text-[10px] bg-white border px-3 py-1 rounded hover:bg-blue-50">Segurança</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('cli-gui')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('referencias')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Finalizar Estudo <i class="fas fa-flag-checkered ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: REFERENCIAS -->
+            <section id="page-referencias" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Aprofundamento Técnico</h2>
+                
+                <p class="mb-8">Parabéns por concluir este material introdutório. Para se tornar um engenheiro de excelência, consulte as fontes clássicas citadas no plano de ensino:</p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-12">
+                    <div class="flex gap-4 p-4 border rounded shadow-sm">
+                        <i class="fas fa-book text-3xl text-blue-800"></i>
+                        <div>
+                            <h5 class="font-bold text-sm">Sistemas Operacionais Modernos</h5>
+                            <p class="text-xs text-slate-500">Andrew S. Tanenbaum. 4ª Edição.</p>
+                            <p class="text-[10px] mt-2 italic">A "Bíblia" da área. Essencial para entender o Kernel do Windows e Linux.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 border rounded shadow-sm">
+                        <i class="fas fa-book text-3xl text-blue-800"></i>
+                        <div>
+                            <h5 class="font-bold text-sm">Arquitetura de Sist. Operacionais</h5>
+                            <p class="text-xs text-slate-500">Machado & Maia. 5ª Edição.</p>
+                            <p class="text-[10px] mt-2 italic">Excelente material em português com foco didático.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-green-100 border-2 border-green-500 p-6 rounded-lg text-center">
+                    <h3 class="text-green-800 font-extrabold text-2xl mb-2">VOCÊ ESTÁ PRONTO!</h3>
+                    <p class="text-green-700 mb-6">Próximo passo (Prática): Instalação de Máquina Virtual e primeiro contato com o Terminal Linux.</p>
+                    <button onclick="window.print()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition">
+                        <i class="fas fa-print mr-2"></i> Salvar como PDF (Manual Físico)
+                    </button>
+                </div>
+
+                <div class="mt-12 text-center text-slate-400 text-xs">
+                    <p>Desenvolvido como Material Didático para o Centro Universitário META.</p>
+                    <p>Prof. Weslyn Ivan Chaves Figueiredo | 2026</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            // Remove active from all sidebar items
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            
+            // Show target page
+            document.getElementById('page-' + pageId).classList.add('active');
+            // Set active sidebar item
+            const btn = document.getElementById('btn-' + pageId);
+            if(btn) btn.classList.add('active');
+
+            // Scroll to top of main
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function checkQuiz(btn, isCorrect) {
+            // Remove previous states
+            const parent = btn.parentElement;
+            parent.querySelectorAll('button').forEach(b => {
+                b.classList.remove('bg-green-500', 'bg-red-500', 'text-white');
+                b.classList.add('bg-white', 'text-slate-900');
+            });
+
+            if(isCorrect) {
+                btn.classList.remove('bg-white');
+                btn.classList.add('bg-green-500', 'text-white');
+                // Small message
+                const msg = document.createElement('span');
+                msg.innerText = " Correto! Engenheiro!";
+                msg.className = "text-green-600 text-[10px] font-bold ml-2";
+                if(parent.children.length < 4) parent.appendChild(msg);
+                setTimeout(() => msg.remove(), 2000);
+            } else {
+                btn.classList.remove('bg-white');
+                btn.classList.add('bg-red-500', 'text-white');
+            }
+        }
+
+        // Mobile Nav Support (Simple toggle)
+        document.addEventListener('keydown', (e) => {
+            if(e.key === "ArrowRight") {
+                const active = document.querySelector('.sidebar-item.active');
+                if(active.nextElementSibling && active.nextElementSibling.tagName === "BUTTON") {
+                    active.nextElementSibling.click();
+                }
+            }
+            if(e.key === "ArrowLeft") {
+                const active = document.querySelector('.sidebar-item.active');
+                if(active.previousElementSibling && active.previousElementSibling.tagName === "BUTTON") {
+                    active.previousElementSibling.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

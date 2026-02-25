@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Técnico: Sistemas Operacionais - Aula 03</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .sidebar-item.active {
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 0.5rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 1);
+        }
+
+        .engineering-note {
+            border-left: 5px solid var(--accent);
+            background-color: #fffbeb;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .critical-note {
+            border-left: 5px solid var(--danger);
+            background-color: #fef2f2;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .page-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .state-box {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .state-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .terminal-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #333;
+            color: #fff;
+            padding: 0.25rem 1rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            font-size: 0.75rem;
+            margin: -1rem -1rem 1rem -1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded">
+                    <img src="Logo Centro Universitário META.png" alt="Logo META" class="h-10 w-auto object-contain">
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-tight">META - CENTRO UNIVERSITÁRIO</h1>
+                    <p class="text-xs uppercase tracking-widest text-blue-200">Engenharia de Computação - 5º Semestre</p>
+                </div>
+            </div>
+            <div class="hidden md:block text-right">
+                <p class="text-sm font-semibold">Disciplina: Sistemas Operacionais</p>
+                <p class="text-xs text-blue-200">Aula 03: Gerenciamento de Processos</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 container mx-auto gap-6 p-4 md:p-8">
+        <!-- Sidebar -->
+        <aside class="w-64 shrink-0 hidden lg:block">
+            <nav class="sticky top-24 space-y-2">
+                <p class="text-xs font-bold text-gray-500 uppercase px-4 mb-2">Material 03: Processos</p>
+                <button onclick="showPage('contexto')" class="sidebar-item active w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-contexto">
+                    <i class="fas fa-play"></i> Contextualização
+                </button>
+                <button onclick="showPage('ciclo-vida')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-ciclo-vida">
+                    <i class="fas fa-recycle"></i> Ciclo de Vida
+                </button>
+                <button onclick="showPage('pcb-threads')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-pcb-threads">
+                    <i class="fas fa-id-card"></i> PCB & Threads
+                </button>
+                <button onclick="showPage('monitoramento')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-monitoramento">
+                    <i class="fas fa-desktop"></i> Lab: Monitoramento
+                </button>
+                <button onclick="showPage('pbl-workshop')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-pbl-workshop">
+                    <i class="fas fa-search"></i> Workshop PBL
+                </button>
+                <button onclick="showPage('fixacao')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-fixacao">
+                    <i class="fas fa-gamepad"></i> Desafios & Quiz
+                </button>
+                <button onclick="showPage('fechamento')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-fechamento">
+                    <i class="fas fa-door-closed"></i> Fechamento
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main -->
+        <main class="flex-1 max-w-4xl glass-card rounded-xl shadow-sm p-6 md:p-12 min-h-[80vh]">
+            
+            <!-- PAGE: CONTEXTO -->
+            <section id="page-contexto" class="page-content active">
+                <div class="flex items-center gap-4 mb-8">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Material 03</span>
+                    <h2 class="text-3xl font-bold text-slate-800">Programa vs Processo</h2>
+                </div>
+
+                <p class="text-lg text-slate-700 mb-8 leading-relaxed">
+                    Muitos usuários (e até alguns desenvolvedores iniciantes) usam as palavras "programa" e "processo" como sinônimos. 
+                    Para um <strong>Engenheiro de Computação</strong>, essa distinção é o divisor de águas entre a teoria e a execução.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-12">
+                    <div class="border-2 border-slate-200 p-6 rounded-xl bg-white">
+                        <h4 class="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                            <i class="fas fa-file-code"></i> Programa (Entidade Estática)
+                        </h4>
+                        <ul class="text-sm space-y-3 text-slate-600">
+                            <li><i class="fas fa-check text-green-500"></i> Reside no disco rígido (HDD/SSD).</li>
+                            <li><i class="fas fa-check text-green-500"></i> É um arquivo passivo contendo instruções.</li>
+                            <li><i class="fas fa-check text-green-500"></i> Exemplo: O arquivo <code>chrome.exe</code> parado na pasta.</li>
+                        </ul>
+                    </div>
+                    <div class="border-2 border-blue-400 p-6 rounded-xl bg-blue-50">
+                        <h4 class="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                            <i class="fas fa-bolt"></i> Processo (Entidade Dinâmica)
+                        </h4>
+                        <ul class="text-sm space-y-3 text-slate-700">
+                            <li><i class="fas fa-check text-blue-600"></i> Reside na memória RAM.</li>
+                            <li><i class="fas fa-check text-blue-600"></i> É uma instância de execução ativa.</li>
+                            <li><i class="fas fa-check text-blue-600"></i> Possui recursos (CPU, memória, arquivos abertos).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="engineering-note">
+                    <strong>A Visão da Engenharia:</strong> O Gerenciador de Processos é o componente do Kernel que cria a ilusão de que tudo acontece ao mesmo tempo (Multitarefa). Em um sistema moderno, centenas de processos competem por poucos núcleos de CPU. Gerenciar isso sem travar é o "segredo" da performance.
+                </div>
+
+                <div class="flex justify-end mt-12">
+                    <button onclick="showPage('ciclo-vida')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Ciclo de Vida <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: CICLO DE VIDA -->
+            <section id="page-ciclo-vida" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Os 5 Estados de um Processo</h2>
+                <p class="mb-8 text-slate-700">Um processo não nasce e morre instantaneamente. Ele transita por uma "Máquina de Estados" dependendo da disponibilidade da CPU e de eventos externos.</p>
+
+                <div class="flex flex-wrap justify-center gap-4 mb-12">
+                    <div class="state-box bg-gray-100 border-2 border-gray-300 p-4 rounded-lg w-32 text-center text-xs font-bold" title="Processo sendo criado">NOVO</div>
+                    <div class="flex items-center"><i class="fas fa-long-arrow-alt-right text-gray-400"></i></div>
+                    <div class="state-box bg-yellow-100 border-2 border-yellow-400 p-4 rounded-lg w-32 text-center text-xs font-bold" title="Aguardando a CPU">PRONTO</div>
+                    <div class="flex items-center"><i class="fas fa-long-arrow-alt-right text-gray-400"></i></div>
+                    <div class="state-box bg-green-100 border-2 border-green-500 p-4 rounded-lg w-32 text-center text-xs font-bold" title="Usando a CPU agora">EXECUÇÃO</div>
+                    <div class="flex items-center"><i class="fas fa-long-arrow-alt-right text-gray-400"></i></div>
+                    <div class="state-box bg-red-100 border-2 border-red-500 p-4 rounded-lg w-32 text-center text-xs font-bold" title="Terminado">SAÍDA</div>
+                </div>
+                
+                <div class="flex justify-center mb-12">
+                    <div class="state-box bg-blue-100 border-2 border-blue-500 p-4 rounded-lg w-48 text-center text-xs font-bold" title="Aguardando E/S ou evento">ESPERA (BLOQUEADO)</div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h5 class="font-bold text-sm mb-2">Transição: Pronto → Execução</h5>
+                        <p class="text-xs text-slate-600">O <strong>Escalonador</strong> escolheu este processo para ganhar tempo de CPU.</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h5 class="font-bold text-sm mb-2">Transição: Execução → Espera</h5>
+                        <p class="text-xs text-slate-600">O processo solicitou algo lento (leitura de disco ou input do usuário) e liberou a CPU.</p>
+                    </div>
+                </div>
+
+                <div class="engineering-note">
+                    <strong>Pense como Engenheiro:</strong> Se um sistema parece lento mas a CPU está em 5%, provavelmente os processos estão presos no estado de <strong>ESPERA</strong>, aguardando um disco lento ou uma rede instável.
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('contexto')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('pcb-threads')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: PCB & Threads <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: PCB & THREADS -->
+            <section id="page-pcb-threads" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">PCB: O "RG" do Processo</h2>
+                
+                <p class="mb-8">Para que o SO consiga pausar um processo e retomar depois exatamente de onde parou, ele precisa de uma ficha técnica chamada <strong>PCB (Process Control Block)</strong>.</p>
+
+                <div class="bg-white border-2 border-slate-200 rounded-xl overflow-hidden mb-12">
+                    <div class="bg-slate-800 text-white p-3 text-center text-xs font-bold">ESTRUTURA DO PCB</div>
+                    <div class="p-6 grid grid-cols-2 gap-4 text-xs">
+                        <div class="p-3 bg-slate-100 rounded"><strong>PID (Process ID):</strong> Identificador único.</div>
+                        <div class="p-3 bg-slate-100 rounded"><strong>Estado:</strong> Pronto, Executando, etc.</div>
+                        <div class="p-3 bg-slate-100 rounded"><strong>PC (Program Counter):</strong> Endereço da próxima instrução.</div>
+                        <div class="p-3 bg-slate-100 rounded"><strong>Registradores:</strong> Cópia dos valores da CPU.</div>
+                        <div class="p-3 bg-slate-100 rounded"><strong>Limites de Memória:</strong> Onde o processo pode tocar.</div>
+                        <div class="p-3 bg-slate-100 rounded"><strong>Lista de Arquivos:</strong> Quais arquivos estão abertos.</div>
+                    </div>
+                </div>
+
+                <hr class="my-10">
+
+                <h3 class="text-2xl font-bold text-slate-800 mb-6">Threads: Processos Leves</h3>
+                <p class="mb-6">Um processo pode ter várias <strong>Threads</strong> (linhas de execução). Imagine o Word: uma thread cuida da interface, outra da correção ortográfica e outra do salvamento automático. Todas compartilham a mesma memória do processo pai, mas executam tarefas paralelas.</p>
+
+                <div class="flex flex-col md:flex-row gap-6 mb-8">
+                    <div class="flex-1 bg-blue-50 p-6 rounded-lg border border-blue-200">
+                        <h5 class="font-bold mb-2">Processo Convencional</h5>
+                        <p class="text-xs">Peso pesado. Criar um novo processo é lento e gasta muita memória.</p>
+                    </div>
+                    <div class="flex-1 bg-green-50 p-6 rounded-lg border border-green-200">
+                        <h5 class="font-bold mb-2">Threads</h5>
+                        <p class="text-xs">Peso leve. Compartilham recursos. Extremamente rápidas para criar e trocar.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('ciclo-vida')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('monitoramento')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Lab Monitoramento <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: MONITORAMENTO -->
+            <section id="page-monitoramento" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Enxergando o Sistema por Dentro</h2>
+                
+                <p class="mb-8 italic">Abra seu laboratório virtual (VirtualBox) e utilize as ferramentas abaixo para analisar o comportamento real dos processos.</p>
+
+                <!-- Linux Section -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                        <i class="fab fa-linux"></i> Ferramentas Linux (Terminal)
+                    </h3>
+                    
+                    <div class="terminal-block mb-6">
+                        <div class="terminal-header">
+                            <span>Terminal - htop</span>
+                            <i class="fas fa-expand"></i>
+                        </div>
+                        <pre>
+  CPU[||||||          15.2%]   Tasks: 84, 126 thr; 1 running
+  Mem[||||||||||     450/2048MB]  Load average: 0.05 0.12 0.08
+
+  PID  USER      PRI  NI  VIRT   RES   SHR S  CPU% MEM%   TIME+  Command
+  1245 guest     20   0  150M   45M   12M S   2.5  2.2   0:15.2 /usr/bin/python3
+  1    root      20   0  165M   12M  8400 S   0.0  0.6   0:01.0 /sbin/init
+                        </pre>
+                    </div>
+
+                    <table class="w-full text-xs text-left mb-6 border">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-2 border">Coluna</th>
+                                <th class="p-2 border">Significado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="p-2 border font-mono">PID</td><td class="p-2 border">Process ID - O número único que identifica o processo.</td></tr>
+                            <tr><td class="p-2 border font-mono">USER</td><td class="p-2 border">Quem é o dono do processo (root ou usuário comum).</td></tr>
+                            <tr><td class="p-2 border font-mono">RES</td><td class="p-2 border">Resident Set Size - Memória RAM física real sendo usada.</td></tr>
+                            <tr><td class="p-2 border font-mono">S</td><td class="p-2 border">Estado (S=Sleeping, R=Running, Z=Zombie).</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Windows Section -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                        <i class="fab fa-windows"></i> Ferramentas Windows
+                    </h3>
+                    <p class="text-sm mb-4">Pressione <code>Ctrl + Shift + Esc</code> para abrir o Gerenciador de Tarefas. Vá na aba "Detalhes" para ver o PID e a linha de comando completa.</p>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('pcb-threads')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('pbl-workshop')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Workshop PBL <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: PBL WORKSHOP -->
+            <section id="page-pbl-workshop" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Workshop PBL: Investigando Fantasmas</h2>
+                
+                <div class="bg-red-50 p-6 rounded-xl border border-red-200 mb-8">
+                    <h4 class="font-bold text-red-800 mb-2 italic">O PROBLEMA:</h4>
+                    <p class="text-sm text-red-900">
+                        Um servidor web de um cliente está apresentando lentidão intermitente. Ao olhar o monitor, você não vê nenhum programa pesado aberto. 
+                        No entanto, a tabela de processos está quase cheia, impedindo que novos usuários acessem o site.
+                    </p>
+                </div>
+
+                <h4 class="text-xl font-bold text-slate-800 mb-6">Diagnóstico de Engenharia</h4>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-12">
+                    <div class="p-5 border rounded-lg bg-white">
+                        <h5 class="font-bold text-slate-800 mb-2">Processos Zumbis (Z)</h5>
+                        <p class="text-xs text-slate-500 mb-4">São processos que já terminaram (deram <code>exit</code>), mas o processo PAI ainda não leu seu código de saída. Eles ocupam uma entrada na tabela de processos do Kernel.</p>
+                        <span class="text-[10px] bg-slate-100 p-1 rounded font-mono">Status: Z</span>
+                    </div>
+                    <div class="p-5 border rounded-lg bg-white">
+                        <h5 class="font-bold text-slate-800 mb-2">Processos Órfãos</h5>
+                        <p class="text-xs text-slate-500 mb-4">O processo PAI morreu antes do processo FILHO. O SO geralmente adota esses órfãos através do processo <strong>init (PID 1)</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="critical-note">
+                    <h5 class="font-bold mb-2">Cuidado: Comandos Críticos</h5>
+                    <p class="text-sm mb-4">O comando <code>kill</code> envia sinais. O sinal mais famoso é o <strong>SIGKILL (-9)</strong>, que força o encerramento imediato sem permitir que o processo salve dados.</p>
+                    <code class="bg-black text-white p-2 rounded text-xs">sudo kill -9 [PID]</code>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('monitoramento')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('fixacao')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Desafios <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: FIXACAO -->
+            <section id="page-fixacao" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Desafios de Engenharia</h2>
+                
+                <!-- Desafio 1 -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">1. O Perfil do Processo</h3>
+                    <p class="text-sm mb-4">Classifique o estado do processo para cada comportamento abaixo:</p>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 border rounded bg-white flex justify-between items-center">
+                            <span class="text-sm">"O processo está usando os registradores da CPU agora."</span>
+                            <select onchange="checkStateChallenge(this, 'exec')" class="text-xs border p-1 rounded">
+                                <option value="">Selecione...</option>
+                                <option value="pronto">Pronto</option>
+                                <option value="exec">Execução</option>
+                                <option value="espera">Espera</option>
+                            </select>
+                        </div>
+                        <div class="p-4 border rounded bg-white flex justify-between items-center">
+                            <span class="text-sm">"O processo terminou sua fatia de tempo e aguarda a próxima chance."</span>
+                            <select onchange="checkStateChallenge(this, 'pronto')" class="text-xs border p-1 rounded">
+                                <option value="">Selecione...</option>
+                                <option value="pronto">Pronto</option>
+                                <option value="exec">Execução</option>
+                                <option value="espera">Espera</option>
+                            </select>
+                        </div>
+                        <div class="p-4 border rounded bg-white flex justify-between items-center">
+                            <span class="text-sm">"O processo aguarda o usuário pressionar 'Enter'."</span>
+                            <select onchange="checkStateChallenge(this, 'espera')" class="text-xs border p-1 rounded">
+                                <option value="">Selecione...</option>
+                                <option value="pronto">Pronto</option>
+                                <option value="exec">Execução</option>
+                                <option value="espera">Espera</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desafio 2 -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">2. Quiz de Diagnóstico</h3>
+                    <div class="bg-slate-800 text-white p-6 rounded-lg">
+                        <p class="mb-6"><strong>Pergunta:</strong> Se eu "matar" (kill -9) um processo PAI no Linux, o que acontece com seus processos FILHOS?</p>
+                        <div class="space-y-3">
+                            <button onclick="quizAnswer(this, false)" class="w-full text-left p-3 border border-slate-600 rounded hover:bg-slate-700 text-xs transition">A) Os processos filhos são encerrados automaticamente pelo Kernel.</button>
+                            <button onclick="quizAnswer(this, true)" class="w-full text-left p-3 border border-slate-600 rounded hover:bg-slate-700 text-xs transition">B) Eles tornam-se órfãos e são adotados pelo processo 'init' (PID 1).</button>
+                            <button onclick="quizAnswer(this, false)" class="w-full text-left p-3 border border-slate-600 rounded hover:bg-slate-700 text-xs transition">C) Eles tornam-se processos zumbis instantaneamente.</button>
+                        </div>
+                        <p id="quiz-feedback" class="mt-4 text-xs font-bold hidden"></p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('pbl-workshop')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('fechamento')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Concluir Módulo <i class="fas fa-flag-checkered ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: FECHAMENTO -->
+            <section id="page-fechamento" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Conclusão do Material 03</h2>
+                
+                <p class="mb-8 leading-relaxed">
+                    Você agora domina a unidade fundamental de trabalho de qualquer Sistema Operacional. Entender como um processo vive, morre e é monitorado é a base para o diagnóstico de qualquer software.
+                </p>
+
+                <div class="bg-blue-50 p-8 rounded-xl border-2 border-blue-200 mb-12">
+                    <h4 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-calendar-alt"></i> Próxima Aula: 04/03
+                    </h4>
+                    <p class="text-sm text-slate-700 mb-6">
+                        O conhecimento sobre <strong>Estados de Processo</strong> é o pré-requisito para nossa próxima aula de <strong>Escalonamento de Processos</strong>. 
+                        Lá aprenderemos os algoritmos matemáticos que a CPU usa para decidir quem joga primeiro na "fila da diversão".
+                    </p>
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <p class="text-xs font-bold text-slate-500 uppercase">Referência de Estudo:</p>
+                        <p class="text-sm italic">"Sistemas Operacionais com Java", Silberschatz. Capítulo 3: Processos.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button onclick="window.print()" class="bg-slate-800 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:bg-black transition">
+                        <i class="fas fa-print mr-2"></i> Gerar Relatório de Estudo
+                    </button>
+                </div>
+
+                <div class="mt-16 text-center text-slate-400 text-xs">
+                    <p>Desenvolvido como Material Didático - Centro Universitário META</p>
+                    <p>Engenharia de Computação | © 2026</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('page-' + pageId).classList.add('active');
+            const btn = document.getElementById('btn-' + pageId);
+            if(btn) btn.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function checkStateChallenge(select, correctValue) {
+            if (select.value === correctValue) {
+                select.className = "text-xs border p-1 rounded bg-green-100 border-green-500 text-green-800";
+            } else if (select.value !== "") {
+                select.className = "text-xs border p-1 rounded bg-red-100 border-red-500 text-red-800";
+            } else {
+                select.className = "text-xs border p-1 rounded";
+            }
+        }
+
+        function quizAnswer(btn, isCorrect) {
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+            
+            if(isCorrect) {
+                feedback.innerText = "EXATO! No Linux, o processo init herda os órfãos para garantir que eles sejam limpos da tabela de processos quando terminarem.";
+                feedback.className = "mt-4 text-xs font-bold text-green-400";
+                btn.classList.add('bg-green-600', 'border-green-400');
+            } else {
+                feedback.innerText = "Ops! Lembre-se do conceito de 'Adoção' pelo PID 1.";
+                feedback.className = "mt-4 text-xs font-bold text-red-400";
+                btn.classList.add('bg-red-900', 'border-red-500');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemas Operacionais - Material 04</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .sidebar-item.active {
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 0.5rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 1);
+        }
+
+        .engineering-note {
+            border-left: 5px solid var(--accent);
+            background-color: #fffbeb;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .page-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .gantt-block {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.75rem;
+            border-right: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .terminal-code {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded">
+                    <img src="Logo Centro Universitário META.png" alt="Logo META" class="h-10 w-auto object-contain">
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-tight">META - CENTRO UNIVERSITÁRIO</h1>
+                    <p class="text-xs uppercase tracking-widest text-blue-200">Engenharia de Computação - 5º Semestre</p>
+                </div>
+            </div>
+            <div class="hidden md:block text-right">
+                <p class="text-sm font-semibold text-white">Material 04: Escalonamento de Processos</p>
+                <p class="text-xs text-blue-200">Engenharia de Performance de Sistemas</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 container mx-auto gap-6 p-4 md:p-8">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 shrink-0 hidden lg:block">
+            <nav class="sticky top-24 space-y-2">
+                <p class="text-xs font-bold text-gray-500 uppercase px-4 mb-2">Material 04: Escalonamento</p>
+                <button onclick="showPage('dilema')" class="sidebar-item active w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-dilema">
+                    <i class="fas fa-balance-scale"></i> O Dilema
+                </button>
+                <button onclick="showPage('algoritmos')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-algoritmos">
+                    <i class="fas fa-calculator"></i> Algoritmos de CPU
+                </button>
+                <button onclick="showPage('pratica-nice')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-pratica-nice">
+                    <i class="fas fa-terminal"></i> Lab: Nice & Renice
+                </button>
+                <button onclick="showPage('pbl-workshop')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-pbl-workshop">
+                    <i class="fas fa-tools"></i> Workshop PBL
+                </button>
+                <button onclick="showPage('fixacao')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-fixacao">
+                    <i class="fas fa-chart-bar"></i> Gantt & Cálculos
+                </button>
+                <button onclick="showPage('fechamento')" class="sidebar-item w-full text-left px-4 py-3 flex items-center gap-3 transition" id="btn-fechamento">
+                    <i class="fas fa-forward"></i> Fechamento
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-4xl glass-card rounded-xl shadow-sm p-6 md:p-12 min-h-[80vh]">
+            
+            <!-- PAGE: O DILEMA -->
+            <section id="page-dilema" class="page-content active">
+                <div class="flex items-center gap-4 mb-8">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Material 04</span>
+                    <h2 class="text-3xl font-bold text-slate-800 italic">O Dilema do Escalonador</h2>
+                </div>
+
+                <p class="text-lg text-slate-700 mb-8 leading-relaxed">
+                    Imagine um servidor moderno: ele possui 8 núcleos de CPU, mas está tentando rodar 250 processos simultaneamente. 
+                    <strong>O problema central:</strong> Como garantir que o sistema não pareça "travado" para o usuário, enquanto processos de fundo (como backups) continuam progredindo?
+                </p>
+
+                <div class="bg-blue-50 border border-blue-200 p-6 rounded-xl mb-12">
+                    <h4 class="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-user-shield"></i> O Papel do Dispatcher
+                    </h4>
+                    <p class="text-sm text-slate-700 leading-relaxed">
+                        Enquanto o <strong>Escalonador</strong> decide <em>quem</em> deve rodar, o <strong>Dispatcher</strong> (Despachante) é o módulo que efetivamente 
+                        dá o controle da CPU ao processo. Ele realiza a troca de contexto, o salto para o local correto do programa e a mudança para o modo usuário.
+                    </p>
+                    <p class="text-xs mt-4 text-blue-600 font-bold uppercase tracking-tighter">Latência do Despachante: O tempo que ele leva para parar um processo e iniciar outro deve ser o menor possível.</p>
+                </div>
+
+                <div class="engineering-note">
+                    <strong>Dica de Engenharia:</strong> Em sistemas de tempo real (satélites, freios ABS), o escalonamento não é apenas sobre "justiça", mas sobre <strong>determinismo</strong>. O processo DEVE terminar antes do seu prazo (deadline), ou o sistema falha.
+                </div>
+
+                <div class="flex justify-end mt-12">
+                    <button onclick="showPage('algoritmos')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Algoritmos de CPU <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: ALGORITMOS -->
+            <section id="page-algoritmos" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Matemática da CPU: Os Algoritmos</h2>
+                
+                <p class="mb-8 text-slate-700">A eficiência de um sistema é medida pelo <em>Turnaround Time</em> (tempo total desde a chegada até o fim) e pelo <em>Waiting Time</em> (tempo na fila).</p>
+
+                <div class="space-y-6 mb-12">
+                    <!-- FCFS -->
+                    <div class="p-6 border rounded-xl bg-white hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-800 mb-2">1. FCFS (First-Come, First-Served)</h4>
+                        <p class="text-sm mb-4">O primeiro a chegar é o primeiro a ser servido. Não-preemptivo.</p>
+                        <div class="bg-red-50 p-3 rounded text-xs border border-red-100 text-red-700">
+                            <strong>Problema: Efeito Comboio.</strong> Se um processo gigante chega primeiro, todos os pequenos ficam presos atrás dele.
+                        </div>
+                    </div>
+
+                    <!-- SJF -->
+                    <div class="p-6 border rounded-xl bg-white hover:shadow-md transition">
+                        <h4 class="font-bold text-blue-800 mb-2">2. SJF (Shortest Job First)</h4>
+                        <p class="text-sm mb-4">Prioriza o processo com o menor tempo de execução. É o algoritmo ótimo para minimizar o tempo de espera médio.</p>
+                        <div class="bg-orange-50 p-3 rounded text-xs border border-orange-100 text-orange-700">
+                            <strong>Risco: Inanição (Starvation).</strong> Processos longos podem nunca rodar se processos curtos continuarem chegando.
+                        </div>
+                    </div>
+
+                    <!-- Round Robin -->
+                    <div class="p-6 border-2 border-blue-400 rounded-xl bg-blue-50 shadow-inner">
+                        <h4 class="font-bold text-blue-900 mb-2">3. Round Robin (Alternância Circular)</h4>
+                        <p class="text-sm mb-4">Essencial para sistemas interativos. Cada processo ganha um <strong>Quantum ($q$)</strong> de tempo. Se não terminar, volta para o fim da fila.</p>
+                        <div class="flex items-center gap-4 bg-white p-4 rounded border">
+                            <i class="fas fa-history text-blue-600 text-2xl"></i>
+                            <div class="text-xs text-slate-600 leading-tight">
+                                <strong>Análise de Quantum:</strong><br>
+                                $q$ muito grande $\rightarrow$ vira FCFS.<br>
+                                $q$ muito pequeno $\rightarrow$ sobrecarga excessiva de troca de contexto.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 text-white p-6 rounded-lg mb-8">
+                    <h4 class="font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-exchange-alt"></i> Preemptivo vs Não-Preemptivo
+                    </h4>
+                    <div class="grid md:grid-cols-2 gap-4 text-xs">
+                        <div class="border border-slate-600 p-3 rounded">
+                            <strong class="text-blue-400">Não-Preemptivo:</strong> Uma vez que o processo ganha a CPU, ele só a solta se terminar ou pedir I/O.
+                        </div>
+                        <div class="border border-slate-600 p-3 rounded">
+                            <strong class="text-green-400">Preemptivo:</strong> O SO pode "expulsar" o processo da CPU a qualquer momento (ex: tempo acabou ou chegou prioridade maior).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('dilema')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('pratica-nice')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Lab Nice & Renice <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: PRÁTICA NICE -->
+            <section id="page-pratica-nice" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Laboratório: Manipulando Prioridades</h2>
+                
+                <p class="mb-8 leading-relaxed">No Linux, utilizamos o valor de <strong>Nice</strong> para sugerir ao escalonador a prioridade de um processo. O valor varia de <strong>-20</strong> (máxima prioridade) a <strong>19</strong> (mínima).</p>
+
+                <div class="space-y-8">
+                    <!-- Comando Nice -->
+                    <div class="border rounded-xl p-6 bg-white">
+                        <h4 class="font-bold mb-2 flex items-center gap-2">
+                            <i class="fas fa-play"></i> Iniciando com Nice
+                        </h4>
+                        <p class="text-sm text-slate-600 mb-4">Para rodar um script pesado sem travar sua interface gráfica:</p>
+                        <div class="terminal-code mb-4">
+                            nice -n 15 ./script_pesado.sh
+                        </div>
+                        <p class="text-[10px] text-slate-400 italic">Isso diz ao Kernel: "Seja 'legal' (nice) e deixe outros processos usarem a CPU antes deste".</p>
+                    </div>
+
+                    <!-- Comando Renice -->
+                    <div class="border rounded-xl p-6 bg-white">
+                        <h4 class="font-bold mb-2 flex items-center gap-2">
+                            <i class="fas fa-edit"></i> Alterando em tempo real (Renice)
+                        </h4>
+                        <p class="text-sm text-slate-600 mb-4">Se um processo já está rodando e consumindo muito, mude sua prioridade pelo PID:</p>
+                        <div class="terminal-code mb-4">
+                            sudo renice -n -5 -p 1245
+                        </div>
+                        <p class="text-[10px] text-slate-400 italic">Nota: Aumentar a prioridade (valores negativos) exige privilégios de ROOT.</p>
+                    </div>
+
+                    <!-- Visualização -->
+                    <div class="bg-indigo-900 text-white p-6 rounded-lg">
+                        <h4 class="font-bold mb-3 italic">Dica de Monitoramento (htop)</h4>
+                        <p class="text-xs mb-4">No <code>htop</code>, procure pela coluna <strong>NI</strong> (Nice) e <strong>PRI</strong> (Prioridade real do Kernel). A prioridade real é calculada como <code>20 + Nice</code>.</p>
+                        <div class="bg-black/30 p-3 rounded font-mono text-[10px] text-green-400 border border-green-900">
+                            PID  USER  PRI  NI  CPU%  MEM%  Command<br>
+                            1245 guest 15  -5   85.2  2.1   ./meu_calculo
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('algoritmos')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('pbl-workshop')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Workshop PBL <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: PBL WORKSHOP -->
+            <section id="page-pbl-workshop" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Workshop PBL: Conflito de Recursos</h2>
+                
+                <div class="bg-red-50 p-8 rounded-xl border-2 border-red-200 mb-8">
+                    <h4 class="font-bold text-red-800 mb-2 italic">O PROBLEMA REAL:</h4>
+                    <p class="text-sm text-red-900 leading-relaxed">
+                        Você é o Engenheiro de Operações da META. Um banco de dados SQL rodando na sua VM está ficando lento toda vez que o script de backup 
+                        compacta arquivos <code>.zip</code>. O banco de dados (PID: 500) precisa de baixa latência, enquanto o backup (PID: 800) pode demorar 
+                        um pouco mais, desde que não pare.
+                    </p>
+                </div>
+
+                <h4 class="text-xl font-bold text-slate-800 mb-4">Ação de Engenharia:</h4>
+                <p class="text-sm mb-6">Qual sequência de comandos você utilizaria para priorizar o banco de dados e "acalmar" o backup?</p>
+
+                <div class="space-y-4 mb-8">
+                    <div class="flex gap-4 items-start p-4 bg-slate-50 rounded border">
+                        <span class="bg-blue-900 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">1</span>
+                        <div>
+                            <p class="text-sm font-bold">Identificar:</p>
+                            <p class="text-xs text-slate-500">Use <code>top</code> ou <code>htop</code> para confirmar que o PID 800 está consumindo 90% de CPU.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start p-4 bg-slate-50 rounded border">
+                        <span class="bg-blue-900 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">2</span>
+                        <div>
+                            <p class="text-sm font-bold">Priorizar o Banco:</p>
+                            <div class="terminal-code text-[10px] mt-1">sudo renice -n -10 -p 500</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start p-4 bg-slate-50 rounded border">
+                        <span class="bg-blue-900 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">3</span>
+                        <div>
+                            <p class="text-sm font-bold">Despriorizar o Backup:</p>
+                            <div class="terminal-code text-[10px] mt-1">renice -n 19 -p 800</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lab-tip p-4 bg-green-50 border-l-4 border-green-500 rounded text-sm text-green-800">
+                    <strong>Resultado Esperado:</strong> O backup continuará rodando, mas agora ele só usará a CPU quando o Banco de Dados estiver ocioso (Idle). 
+                    A latência do banco cairá drasticamente sem precisar "matar" o backup.
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('pratica-nice')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('fixacao')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Próximo: Gantt & Cálculos <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: FIXACAO -->
+            <section id="page-fixacao" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Atividades de Fixação</h2>
+
+                <!-- Gantt Challenge -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">1. Desafio do Gráfico de Gantt</h3>
+                    <p class="text-sm mb-4">Considere três processos que chegam no tempo 0:</p>
+                    <table class="w-full text-xs mb-6 border">
+                        <thead class="bg-slate-100">
+                            <tr><th class="p-2 border">Processo</th><th class="p-2 border">Duração (Burst Time)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="p-2 border">P1</td><td class="p-2 border">10ms</td></tr>
+                            <tr><td class="p-2 border">P2</td><td class="p-2 border">4ms</td></tr>
+                            <tr><td class="p-2 border">P3</td><td class="p-2 border">2ms</td></tr>
+                        </tbody>
+                    </table>
+
+                    <h5 class="font-bold text-sm mb-2 uppercase">Simulação FCFS (P1, P2, P3):</h5>
+                    <div class="w-full bg-slate-200 h-10 rounded overflow-hidden flex mb-2 border border-slate-300">
+                        <div class="gantt-block bg-blue-600" style="width: 62.5%;">P1 (10ms)</div>
+                        <div class="gantt-block bg-green-600" style="width: 25%;">P2 (4)</div>
+                        <div class="gantt-block bg-orange-600" style="width: 12.5%;">P3 (2)</div>
+                    </div>
+                    <div class="flex justify-between text-[10px] px-1 text-slate-500 mb-8">
+                        <span>0</span><span>10</span><span>14</span><span>16</span>
+                    </div>
+
+                    <h5 class="font-bold text-sm mb-2 uppercase">Simulação Round Robin ($q = 4$ms):</h5>
+                    <div class="w-full bg-slate-200 h-10 rounded overflow-hidden flex border border-slate-300">
+                        <div class="gantt-block bg-blue-600" style="width: 25%;">P1</div>
+                        <div class="gantt-block bg-green-600" style="width: 25%;">P2</div>
+                        <div class="gantt-block bg-orange-600" style="width: 12.5%;">P3</div>
+                        <div class="gantt-block bg-blue-500" style="width: 25%;">P1</div>
+                        <div class="gantt-block bg-blue-400" style="width: 12.5%;">P1</div>
+                    </div>
+                    <div class="flex justify-between text-[10px] px-1 text-slate-500">
+                        <span>0</span><span>4</span><span>8</span><span>10</span><span>14</span><span>16</span>
+                    </div>
+                </div>
+
+                <!-- Calculator -->
+                <div class="p-6 bg-slate-800 text-white rounded-xl">
+                    <h3 class="text-xl font-bold text-blue-300 mb-4">2. Calculadora de Tempo de Espera Médio</h3>
+                    <p class="text-xs mb-4">No exemplo FCFS acima, qual o tempo de espera médio?</p>
+                    <ul class="text-[10px] space-y-2 mb-4 list-disc ml-5">
+                        <li>P1 espera 0ms</li>
+                        <li>P2 espera 10ms</li>
+                        <li>P3 espera 14ms</li>
+                    </ul>
+                    <div class="bg-black/50 p-4 rounded text-center">
+                        <p class="text-xs mb-2">Média: $(0 + 10 + 14) / 3$</p>
+                        <p class="text-2xl font-bold text-yellow-400">8.0 ms</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-12">
+                    <button onclick="showPage('pbl-workshop')" class="text-blue-600 font-bold py-3 px-8 rounded-lg transition border border-blue-600">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <button onclick="showPage('fechamento')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Concluir Estudo <i class="fas fa-flag-checkered ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE: FECHAMENTO -->
+            <section id="page-fechamento" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Fim do Material 4</h2>
+                
+                <p class="text-lg text-slate-700 mb-8">
+                    Dominar o escalonamento é entender como o Sistema Operacional sustenta a vida da multitarefa. Você agora tem o poder de otimizar sistemas em tempo real.
+                </p>
+
+                <div class="bg-indigo-50 p-8 rounded-xl border-2 border-indigo-200 mb-12">
+                    <h4 class="text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-forward"></i> Próxima Aula: 11/03
+                    </h4>
+                    <p class="text-sm text-slate-700 mb-6 italic">
+                        Na próxima aula, abordaremos <strong>Comunicação e Sincronização</strong>. Aprenderemos o que acontece quando dois processos tentam acessar o mesmo dado ao mesmo tempo (Condição de Corrida) e como evitar o caos usando Semáforos e Mutexes.
+                    </p>
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <p class="text-xs font-bold text-slate-500 uppercase">Sugestão de Aprofundamento:</p>
+                        <p class="text-sm italic">"Sistemas Operacionais Modernos", Tanenbaum. Capítulo 2.4: Escalonamento.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button onclick="window.print()" class="bg-slate-800 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:bg-black transition">
+                        <i class="fas fa-print mr-2"></i> Exportar Manual de Performance (PDF)
+                    </button>
+                </div>
+
+                <div class="mt-16 text-center text-slate-400 text-xs">
+                    <p>Docente: Weslyn Ivan Chaves Figueiredo | © 2026</p>
+                    <p>Centro Universitário META - Engenharia de Computação</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('page-' + pageId).classList.add('active');
+            const btn = document.getElementById('btn-' + pageId);
+            if(btn) btn.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material de Estudo: UI/UX & Front-end - META</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .slide { display: none; min-height: 60vh; }
+        .slide.active { display: block; animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .progress-bar { transition: width 0.3s ease; }
+        .code-block { background: #1e1e1e; color: #9cdcfe; padding: 1rem; border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem; overflow-x: auto; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <img src="logo.png" alt="Logo META" class="h-10 w-auto object-contain">                 
+            </div>
+            <div class="text-sm font-semibold text-slate-500 uppercase tracking-widest">
+                Lab. Web | Material 04 |
+            </div>
+        </div>
+        <div class="w-full bg-slate-100 h-1.5">
+            <div id="progressBar" class="progress-bar bg-indigo-600 h-full w-0 shadow-[0_0_10px_rgba(79,70,229,0.5)]"></div>
+        </div>
+    </header>
+
+    <main id="content-to-print" class="max-w-4xl mx-auto px-4 py-12">
+        
+        <!-- SLIDE 1: Capa -->
+        <section class="slide active" data-index="1">
+            <div class="text-center py-24">
+                <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">Material 04</span>
+                <h1 class="text-6xl font-black mt-8 text-slate-900 leading-tight tracking-tight">UI/UX: O Front-end <br><span class="text-indigo-600">do seu TCC</span></h1>
+                <p class="text-xl text-slate-600 mt-8 max-w-2xl mx-auto leading-relaxed">Transformando requisitos em interfaces modernas, acessíveis e focadas no usuário final.</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: UI vs UX -->
+        <section class="slide" data-index="2">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="text-indigo-600">01.</span> A Interface como Experiência
+            </h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                    <div class="text-3xl mb-4">🎨</div>
+                    <h3 class="font-bold text-xl mb-2">UI (User Interface)</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">É a camada visual. Cores, tipografia, botões e espaçamento. É o que o usuário <strong>toca</strong> e <strong>vê</strong>.</p>
+                </div>
+                <div class="p-6 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-100">
+                    <div class="text-3xl mb-4">🧠</div>
+                    <h3 class="font-bold text-xl mb-2 text-indigo-100">UX (User Experience)</h3>
+                    <p class="text-indigo-50 text-sm leading-relaxed">É a jornada. O fluxo, a facilidade de uso e a lógica. É o que o usuário <strong>sente</strong> ao navegar.</p>
+                </div>
+            </div>
+            <p class="mt-8 text-center italic text-slate-500">"Uma UI bonita não salva uma UX confusa, mas uma UX ruim estraga qualquer design."</p>
+        </section>
+
+        <!-- SLIDE 3: O Primeiro Impacto na Banca -->
+        <section class="slide" data-index="3">
+            <h2 class="text-3xl font-bold mb-8">Por que UI/UX no TCC?</h2>
+            <p class="mb-6">A interface é o primeiro ponto de avaliação da <strong>Banca Examinadora</strong>. Antes mesmo de verem seu banco de dados, eles verão sua tela de login.</p>
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-r-xl">
+                <h4 class="font-bold text-amber-900 mb-2">Critério de Avaliação:</h4>
+                <p class="text-amber-800 text-sm">Um sistema com interface desleixada transmite a sensação de que o código também é desorganizado. Um design profissional eleva sua nota AV1 e AV3 instantaneamente.</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Teoria: HTML Semântico -->
+        <section class="slide" data-index="4">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="text-indigo-600">02.</span> Semântica e Acessibilidade
+            </h2>
+            <p class="mb-6">HTML Semântico não é apenas "organização", é dar significado ao conteúdo para <strong>Google (SEO)</strong> e <strong>Leitores de Tela</strong>.</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-red-50 border border-red-100 rounded-lg">
+                    <p class="text-xs font-bold text-red-600 uppercase mb-2">Errado (Divite)</p>
+                    <div class="code-block text-[10px]">
+                        &lt;div class="titulo"&gt;Meu TCC&lt;/div&gt;<br>
+                        &lt;div class="menu"&gt;...&lt;/div&gt;
+                    </div>
+                </div>
+                <div class="p-4 bg-green-50 border border-green-100 rounded-lg">
+                    <p class="text-xs font-bold text-green-600 uppercase mb-2">Correto (Semântico)</p>
+                    <div class="code-block text-[10px]">
+                        &lt;header&gt;<br>
+                        &nbsp;&nbsp;&lt;h1&gt;Meu TCC&lt;/h1&gt;<br>
+                        &nbsp;&nbsp;&lt;nav&gt;...&lt;/nav&gt;<br>
+                        &lt;/header&gt;
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: Acessibilidade WCAG -->
+        <section class="slide" data-index="5">
+            <h2 class="text-3xl font-bold mb-8">Diretrizes de Acessibilidade (WCAG)</h2>
+            <div class="space-y-4">
+                <div class="flex items-start gap-4 p-4 bg-white border rounded-xl">
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center font-bold">1</div>
+                    <div>
+                        <h4 class="font-bold">Contraste de Cores</h4>
+                        <p class="text-sm text-slate-500">Garanta que textos tenham contraste suficiente contra o fundo (AA: 4.5:1).</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 p-4 bg-white border rounded-xl">
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center font-bold">2</div>
+                    <div>
+                        <h4 class="font-bold">Navegação via Teclado</h4>
+                        <p class="text-sm text-slate-500">Todos os botões e links devem ser acessíveis usando a tecla [TAB].</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Codificação Principal -->
+        <section class="slide" data-index="6">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="text-indigo-600">03.</span> Prática: Codificação das Telas
+            </h2>
+            <p class="mb-6">Nesta fase, você deve escolher sua "pilha" de estilo. Recomendação de mercado:</p>
+            <div class="flex flex-wrap gap-4">
+                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-bold text-sm">Tailwind CSS (Recomendado)</span>
+                <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-full font-bold text-sm">Bootstrap 5</span>
+                <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-full font-bold text-sm">Styled Components</span>
+            </div>
+            <p class="mt-8 text-sm text-slate-500 italic">Dica: Frameworks aceleram o desenvolvimento e garantem consistência visual.</p>
+        </section>
+
+        <!-- SLIDE 7: Tela 1 - Login/Cadastro -->
+        <section class="slide" data-index="7">
+            <h2 class="text-2xl font-bold mb-6">Tela Crítica 1: Login e Cadastro</h2>
+            <div class="bg-slate-200 h-40 rounded-t-xl flex items-center justify-center border-b border-slate-300">
+                <div class="w-24 h-32 bg-white rounded shadow-lg p-2">
+                    <div class="w-full h-2 bg-slate-100 mb-2"></div>
+                    <div class="w-full h-4 bg-indigo-600 mb-2"></div>
+                    <div class="w-full h-2 bg-slate-100"></div>
+                </div>
+            </div>
+            <div class="p-4 bg-white border border-t-0 rounded-b-xl">
+                <h4 class="font-bold text-sm mb-2 uppercase text-indigo-600">Requisitos UI:</h4>
+                <ul class="text-xs space-y-1 text-slate-600">
+                    <li>● Mensagens de erro claras (Input vermelho).</li>
+                    <li>● Botão de ação principal (Primary Action) destacado.</li>
+                    <li>● Layout centralizado e minimalista.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: Tela 2 - Dashboard/Listagem -->
+        <section class="slide" data-index="8">
+            <h2 class="text-2xl font-bold mb-6">Tela Crítica 2: Dashboard/Listagem</h2>
+            <div class="p-6 bg-white border rounded-xl shadow-sm">
+                <div class="flex gap-4 mb-4">
+                    <div class="flex-1 h-12 bg-slate-100 rounded"></div>
+                    <div class="flex-1 h-12 bg-slate-100 rounded"></div>
+                    <div class="flex-1 h-12 bg-slate-100 rounded"></div>
+                </div>
+                <div class="space-y-2">
+                    <div class="w-full h-8 bg-indigo-50 rounded"></div>
+                    <div class="w-full h-8 bg-slate-50 rounded"></div>
+                </div>
+                <p class="mt-4 text-xs text-slate-400 italic">Pense na hierarquia: o que é mais importante deve ser maior e mais escuro.</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Tela 3 - Formulários -->
+        <section class="slide" data-index="9">
+            <h2 class="text-2xl font-bold mb-6">Tela Crítica 3: Formulários (CRUD)</h2>
+            <div class="p-6 bg-white border rounded-xl">
+                <label class="block text-xs font-bold text-slate-500 mb-1">NOME DO PROJETO</label>
+                <input type="text" placeholder="Ex: Sistema de Gestão" class="w-full p-2 border rounded-lg mb-4 text-sm bg-slate-50 outline-none">
+                
+                <div class="flex justify-end gap-2">
+                    <button class="px-4 py-1 text-xs font-bold text-slate-500">Cancelar</button>
+                    <button class="px-4 py-1 text-xs font-bold bg-indigo-600 text-white rounded">Salvar</button>
+                </div>
+            </div>
+            <p class="mt-6 text-sm"><strong>Dica de UX:</strong> Use máscaras de entrada (Data, CPF) para evitar erros do usuário.</p>
+        </section>
+
+        <!-- SLIDE 10: Guia Rápido: Flexbox -->
+        <section class="slide" data-index="10">
+            <h2 class="text-3xl font-bold mb-8 text-indigo-600">Guia Rápido: Flexbox</h2>
+            <p class="mb-4 text-sm">Essencial para alinhar elementos em uma dimensão (Linha ou Coluna).</p>
+            <div class="code-block mb-4">
+                .container {<br>
+                &nbsp;&nbsp;display: flex;<br>
+                &nbsp;&nbsp;justify-content: center; /* Alinha horizontal */<br>
+                &nbsp;&nbsp;align-items: center; /* Alinha vertical */<br>
+                &nbsp;&nbsp;gap: 1rem; /* Espaço entre itens */<br>
+                }
+            </div>
+            <div class="flex justify-center gap-2 p-4 bg-indigo-50 border border-indigo-100 rounded-lg">
+                <div class="w-8 h-8 bg-indigo-600 rounded"></div>
+                <div class="w-8 h-8 bg-indigo-400 rounded"></div>
+                <div class="w-8 h-8 bg-indigo-200 rounded"></div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: Guia Rápido: CSS Grid -->
+        <section class="slide" data-index="11">
+            <h2 class="text-3xl font-bold mb-8 text-indigo-600">Guia Rápido: CSS Grid</h2>
+            <p class="mb-4 text-sm">Perfeito para layouts complexos de duas dimensões (Painéis/Dashboards).</p>
+            <div class="code-block mb-4">
+                .grid-layout {<br>
+                &nbsp;&nbsp;display: grid;<br>
+                &nbsp;&nbsp;grid-template-columns: repeat(3, 1fr);<br>
+                &nbsp;&nbsp;gap: 20px;<br>
+                }
+            </div>
+            <div class="grid grid-cols-3 gap-2 p-4 bg-slate-100 rounded-lg">
+                <div class="h-10 bg-slate-300 rounded"></div>
+                <div class="h-10 bg-slate-300 rounded"></div>
+                <div class="h-10 bg-slate-300 rounded"></div>
+                <div class="h-10 col-span-2 bg-indigo-400 rounded"></div>
+                <div class="h-10 bg-slate-300 rounded"></div>
+            </div>
+        </section>
+
+        <!-- SLIDE 12: Workshop PBL -->
+        <section class="slide" data-index="12">
+            <h2 class="text-3xl font-bold mb-8">4. Workshop PBL: Prototipagem</h2>
+            <div class="bg-indigo-900 text-white p-8 rounded-3xl shadow-2xl">
+                <h3 class="text-2xl font-bold mb-4 italic">Desafio de Design</h3>
+                <p class="mb-6 opacity-80">Traduza os requisitos do seu TCC em uma <strong>Sidebar (Barra Lateral)</strong> funcional que contenha pelo menos 4 links e a foto do usuário logado.</p>
+                <div class="p-4 bg-white/10 rounded-xl border border-white/20">
+                    <p class="text-sm font-bold uppercase tracking-widest text-indigo-300 mb-2">Critério de Sucesso:</p>
+                    <p class="text-xs">A navegação deve ser consistente em todas as telas do sistema.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 13: Sidebar Semântica -->
+        <section class="slide" data-index="13">
+            <h2 class="text-3xl font-bold mb-8">Exemplo de Sidebar Semântica</h2>
+            <div class="code-block text-[10px]">
+                &lt;aside class="sidebar"&gt;<br>
+                &nbsp;&nbsp;&lt;nav&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;&lt;a href="/home"&gt;Home&lt;/a&gt;&lt;/li&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;&lt;a href="/relatorios"&gt;Relatórios&lt;/a&gt;&lt;/li&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;<br>
+                &nbsp;&nbsp;&lt;/nav&gt;<br>
+                &lt;/aside&gt;
+            </div>
+            <p class="mt-4 text-xs text-slate-500">Usamos &lt;aside&gt; porque o conteúdo da barra lateral é "tangencial" ao conteúdo principal.</p>
+        </section>
+
+        <!-- SLIDE 14: Atividade Lúdica: Auditoria -->
+        <section class="slide" data-index="14">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="text-indigo-600">05.</span> Auditoria de Acessibilidade
+            </h2>
+            <p class="mb-6">Abra o Chrome, aperte F12 e vá na aba <strong>Lighthouse</strong>.</p>
+            <div class="p-6 bg-white border rounded-2xl">
+                <h4 class="font-bold mb-4">Checklist de Auditoria:</h4>
+                <div class="space-y-2">
+                    <label class="flex items-center gap-3 text-sm">
+                        <input type="checkbox" class="w-4 h-4 text-indigo-600"> Todos os &lt;img&gt; possuem o atributo "alt"?
+                    </label>
+                    <label class="flex items-center gap-3 text-sm">
+                        <input type="checkbox" class="w-4 h-4 text-indigo-600"> Os botões têm tamanho mínimo de 44px (touch friendly)?
+                    </label>
+                    <label class="flex items-center gap-3 text-sm">
+                        <input type="checkbox" class="w-4 h-4 text-indigo-600"> O formulário tem &lt;label&gt; associado a cada input?
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 15: Quiz Semântico -->
+        <section class="slide" data-index="15">
+            <h2 class="text-3xl font-bold mb-8 text-indigo-600">Quiz Semântico</h2>
+            <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
+                <p class="text-lg font-bold mb-6">"Qual tag é mais adequada para o título principal da página de perfil do usuário?"</p>
+                <div class="grid gap-3">
+                    <button onclick="quizSemantic('wrong', this)" class="p-4 bg-white border rounded-xl hover:bg-slate-50 text-left font-mono text-sm">&lt;div class="titulo"&gt;</button>
+                    <button onclick="quizSemantic('correct', this)" class="p-4 bg-white border rounded-xl hover:bg-slate-50 text-left font-mono text-sm">&lt;h1&gt;</button>
+                    <button onclick="quizSemantic('wrong', this)" class="p-4 bg-white border rounded-xl hover:bg-slate-50 text-left font-mono text-sm">&lt;header-text&gt;</button>
+                </div>
+                <p id="quizFeedback" class="mt-6 text-center font-bold text-sm min-h-[20px]"></p>
+            </div>
+        </section>
+
+        <!-- SLIDE 16: Box: Dica de Usabilidade Móvel -->
+        <section class="slide" data-index="16">
+            <h2 class="text-3xl font-bold mb-8">Box: Usabilidade Mobile</h2>
+            <div class="bg-slate-900 text-white p-8 rounded-3xl">
+                <h3 class="text-xl font-bold text-amber-400 mb-4">Responsividade no TCC</h3>
+                <p class="text-sm opacity-80 leading-relaxed">
+                    Não desenvolva pensando apenas em monitores de 27 polegadas. A banca pode testar seu sistema em um notebook de 13 ou até num tablet. 
+                    <br><br>
+                    <strong>Regra de Ouro:</strong> Use unidades relativas como `%`, `rem` ou `vw` em vez de pixels fixos. No Tailwind, abuse dos prefixos `sm:`, `md:` e `lg:`.
+                </p>
+            </div>
+        </section>
+
+        <!-- SLIDE 17: Cores e Psicologia -->
+        <section class="slide" data-index="17">
+            <h2 class="text-3xl font-bold mb-8">Psicologia das Cores</h2>
+            <p class="mb-6">A cor do seu TCC comunica sem palavras:</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-blue-600 text-white rounded-lg text-xs font-bold">AZUL: Confiança, Segurança, Institucional</div>
+                <div class="p-4 bg-green-600 text-white rounded-lg text-xs font-bold">VERDE: Saúde, Crescimento, Sucesso</div>
+                <div class="p-4 bg-red-600 text-white rounded-lg text-xs font-bold">VERMELHO: Erro, Atenção, Urgência</div>
+                <div class="p-4 bg-amber-500 text-white rounded-lg text-xs font-bold">AMARELO: Alerta, Otimismo, Cuidado</div>
+            </div>
+        </section>
+
+        <!-- SLIDE 18: Tipografia Profissional -->
+        <section class="slide" data-index="18">
+            <h2 class="text-3xl font-bold mb-8">Tipografia e Leitura</h2>
+            <p class="text-sm text-slate-600 leading-relaxed mb-6">Para aplicações web de gestão (TCCs comuns), utilize fontes sem serifa (Sans Serif) para melhor leitura em telas.</p>
+            <div class="p-6 bg-white border rounded-xl">
+                <p class="text-xs text-slate-400 mb-2 uppercase tracking-widest">Recomendações:</p>
+                <ul class="space-y-2 font-semibold">
+                    <li style="font-family: 'Inter', sans-serif;">Inter (A favorita dos designers SaaS)</li>
+                    <li style="font-family: 'Roboto', sans-serif;">Roboto (Padrão Android)</li>
+                    <li style="font-family: 'Poppins', sans-serif;">Poppins (Moderna e geométrica)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 19: Feedback Visual -->
+        <section class="slide" data-index="19">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-600">Feedback Visual</h2>
+            <p class="text-sm mb-4 italic">"O sistema nunca deve deixar o usuário no vácuo."</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 border border-indigo-200 bg-indigo-50 rounded-lg text-center">
+                    <div class="inline-block w-4 h-4 border-2 border-indigo-600 border-t-transparent animate-spin rounded-full mb-2"></div>
+                    <p class="text-xs font-bold">Estado de Carregamento (Loading)</p>
+                </div>
+                <div class="p-4 border border-green-200 bg-green-50 rounded-lg text-center">
+                    <div class="text-green-600 text-lg mb-2">✅</div>
+                    <p class="text-xs font-bold">Confirmação de Ação (Toast)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 20: Estados Vazios (Empty States) -->
+        <section class="slide" data-index="20">
+            <h2 class="text-3xl font-bold mb-6">Empty States (Estados Vazios)</h2>
+            <p class="text-sm mb-4">Se não há dados, diga ao usuário o que fazer, não deixe a tela branca.</p>
+            <div class="p-10 bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl text-center">
+                <div class="text-4xl mb-4">📂</div>
+                <h4 class="font-bold text-slate-800">Nenhum relatório encontrado</h4>
+                <p class="text-xs text-slate-500 mb-4">Clique no botão abaixo para criar o seu primeiro registro.</p>
+                <button class="bg-indigo-600 text-white px-4 py-2 rounded text-xs font-bold">Criar Relatório</button>
+            </div>
+        </section>
+
+        <!-- SLIDE 21: Componentes: Botões -->
+        <section class="slide" data-index="21">
+            <h2 class="text-3xl font-bold mb-8 text-indigo-600">Anatomia de um Botão</h2>
+            <div class="flex flex-wrap gap-4 items-center">
+                <button class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold shadow-lg shadow-indigo-100 hover:-translate-y-1 transition">Primário</button>
+                <button class="bg-white border-2 border-indigo-600 text-indigo-600 px-6 py-3 rounded-lg font-bold">Secundário</button>
+                <button class="text-indigo-600 font-bold hover:underline">Link/Terciário</button>
+            </div>
+            <p class="mt-8 text-xs text-slate-500 italic">Dica: Use sombra (box-shadow) para dar profundidade e indicar que o elemento é clicável.</p>
+        </section>
+
+        <!-- SLIDE 22: Componentes: Inputs -->
+        <section class="slide" data-index="22">
+            <h2 class="text-3xl font-bold mb-8">Inputs e Labels</h2>
+            <div class="space-y-4 max-w-sm">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">E-mail</label>
+                    <input type="email" value="aluno@meta.edu.br" class="w-full border-2 border-slate-200 p-3 rounded-xl focus:border-indigo-600 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-red-600 mb-1">Senha</label>
+                    <input type="password" value="123" class="w-full border-2 border-red-500 p-3 rounded-xl outline-none">
+                    <p class="text-[10px] text-red-500 mt-1 font-bold">A senha deve conter 8 caracteres.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 23: UX Writing -->
+        <section class="slide" data-index="23">
+            <h2 class="text-3xl font-bold mb-8">UX Writing: O Texto Importa</h2>
+            <p class="text-sm mb-6">Evite mensagens genéricas. Seja humano e claro.</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-red-50 text-red-800 rounded border border-red-200">
+                    <p class="text-xs font-bold uppercase mb-1">Ruim:</p>
+                    <p class="text-sm">Erro 404. Ocorreu um problema de sistema.</p>
+                </div>
+                <div class="p-4 bg-green-50 text-green-800 rounded border border-green-200">
+                    <p class="text-xs font-bold uppercase mb-1">Bom:</p>
+                    <p class="text-sm">Ops! Não encontramos essa página. Vamos voltar?</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 24: Espaçamento (White Space) -->
+        <section class="slide" data-index="24">
+            <h2 class="text-3xl font-bold mb-8">White Space (Espaço em Branco)</h2>
+            <p class="text-sm text-slate-600 leading-relaxed">Não tenha medo de deixar espaços vazios. O espaço em branco reduz a carga cognitiva e guia o olhar do usuário.</p>
+            <div class="mt-8 flex gap-8">
+                <div class="w-1/2 h-20 bg-slate-900 flex items-center justify-center text-white text-[10px] rounded">Sufocado</div>
+                <div class="w-1/2 p-8 bg-indigo-600 flex items-center justify-center text-white text-[10px] rounded">Respirando</div>
+            </div>
+        </section>
+
+        <!-- SLIDE 25: Ícones Semânticos -->
+        <section class="slide" data-index="25">
+            <h2 class="text-3xl font-bold mb-8 text-indigo-600">Ícones e Significado</h2>
+            <p class="text-sm mb-6">Use bibliotecas como <strong>Lucide React</strong> ou <strong>FontAwesome</strong>, mas sempre com rótulos de texto se o ícone não for universal.</p>
+            <div class="flex gap-10 justify-center text-2xl">
+                <div class="text-center"><div class="mb-1">🏠</div><p class="text-[10px] font-bold">Home</p></div>
+                <div class="text-center"><div class="mb-1">⚙️</div><p class="text-[10px] font-bold">Config</p></div>
+                <div class="text-center"><div class="mb-1">📊</div><p class="text-[10px] font-bold">Gráficos</p></div>
+            </div>
+        </section>
+
+        <!-- SLIDE 26: Checkpoint Final -->
+        <section class="slide" data-index="26">
+            <h2 class="text-3xl font-bold mb-8">6. Fechamento e Checkpoint</h2>
+            <div class="bg-indigo-50 p-8 rounded-3xl border border-indigo-100">
+                <p class="font-bold mb-4">O que entregar hoje:</p>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center gap-2">✅ Estrutura de pastas da View funcional.</li>
+                    <li class="flex items-center gap-2">✅ Pelo menos 2 telas codificadas (Semânticas).</li>
+                    <li class="flex items-center gap-2">✅ Navegação entre telas funcionando.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 27: Próxima Aula (05/03) -->
+        <section class="slide" data-index="27">
+            <h2 class="text-3xl font-bold mb-8">Próximo Passo (05/03)</h2>
+            <div class="flex items-center gap-6 p-8 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-100">
+                <div class="text-5xl">📱</div>
+                <div>
+                    <h3 class="text-xl font-bold">Experiência e Responsividade</h3>
+                    <p class="text-indigo-100 text-sm">Focaremos em tornar sua interface 100% responsiva para dispositivos móveis e fluxos de navegação complexos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 28: Referências Bibliográficas -->
+        <section class="slide" data-index="28">
+            <h2 class="text-3xl font-bold mb-8">Referências de Estudo</h2>
+            <div class="grid gap-4">
+                <div class="p-4 border rounded-xl flex items-center gap-4 bg-white">
+                    <div class="text-2xl">📖</div>
+                    <div>
+                        <p class="font-bold text-sm">KALBACH, J.</p>
+                        <p class="text-xs text-slate-500 italic">Design de navegação web. Editora Novatec.</p>
+                    </div>
+                </div>
+                <div class="p-4 border rounded-xl flex items-center gap-4 bg-white">
+                    <div class="text-2xl">💻</div>
+                    <div>
+                        <p class="font-bold text-sm">Documentação Tailwind CSS</p>
+                        <p class="text-xs text-slate-500 italic">Padrão de mercado para produtividade em Front-end.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 29: Recado do Designer -->
+        <section class="slide" data-index="29">
+            <h2 class="text-3xl font-bold mb-8 italic text-indigo-600">Visão de Produto</h2>
+            <div class="p-8 bg-slate-900 text-white rounded-3xl relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 text-9xl opacity-10">🎨</div>
+                <p class="text-lg leading-relaxed relative z-10">
+                    "Um bom designer não faz apenas o que o usuário pede, mas o que o usuário precisa para completar sua tarefa com o mínimo de esforço. Trate o front-end do seu TCC como um produto real que será lançado no mercado."
+                </p>
+            </div>
+        </section>
+
+        <!-- SLIDE 30: Conclusão -->
+        <section class="slide" data-index="30">
+            <div class="text-center py-20">
+                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-8 text-3xl shadow-xl shadow-indigo-200">✨</div>
+                <h2 class="text-4xl font-bold mb-4 text-slate-900">Interface Pronta!</h2>
+                <p class="text-lg text-slate-600 mb-12">Você deu rosto e alma ao seu projeto acadêmico.</p>
+                
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                    <button onclick="downloadPDF()" class="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                        Baixar Guia PDF (Aula 04)
+                    </button>
+                    <button onclick="currentSlide=1; updateNavigation();" class="bg-white text-slate-700 border-2 border-slate-200 px-10 py-4 rounded-xl font-bold hover:bg-slate-50 transition">
+                        Rever do Início
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navegação -->
+        <div class="mt-16 flex items-center justify-between border-t border-slate-200 pt-8">
+            <button id="prevBtn" onclick="changeSlide(-1)" class="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold transition">
+                <span>← Anterior</span>
+            </button>
+            <div class="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500">
+                SLIDE <span id="currentPage">1</span> / 30
+            </div>
+            <button id="nextBtn" onclick="changeSlide(1)" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-bold transition">
+                <span>Próximo →</span>
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-24 py-12">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <p class="text-slate-400 text-xs font-semibold uppercase tracking-widest">
+                Centro Universitário META | Laboratório de Aplicações para Web | 2026
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 30;
+
+        function updateNavigation() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(s => s.classList.remove('active'));
+            const activeSlide = document.querySelector(`.slide[data-index="${currentSlide}"]`);
+            if (activeSlide) activeSlide.classList.add('active');
+            
+            document.getElementById('currentPage').innerText = currentSlide;
+            document.getElementById('prevBtn').style.opacity = currentSlide === 1 ? '0' : '1';
+            document.getElementById('nextBtn').style.display = currentSlide === totalSlides ? 'none' : 'flex';
+            
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            if (currentSlide < 1) currentSlide = 1;
+            if (currentSlide > totalSlides) currentSlide = totalSlides;
+            updateNavigation();
+        }
+
+        // Interatividade
+        function quizSemantic(status, btn) {
+            const feedback = document.getElementById('quizFeedback');
+            const btns = btn.parentElement.querySelectorAll('button');
+            btns.forEach(b => b.classList.remove('border-indigo-600', 'bg-indigo-50'));
+            
+            if (status === 'correct') {
+                feedback.innerText = "Excelente! O <h1> define o tópico principal da página e é vital para SEO e acessibilidade.";
+                feedback.className = "mt-6 text-center font-bold text-green-600 text-sm";
+                btn.classList.add('border-green-600', 'bg-green-50');
+            } else {
+                feedback.innerText = "Quase lá! Lembre-se que tags semânticas dizem ao navegador O QUE é o conteúdo.";
+                feedback.className = "mt-6 text-center font-bold text-red-600 text-sm";
+                btn.classList.add('border-red-600', 'bg-red-50');
+            }
+        }
+
+        // Download PDF
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const content = document.getElementById('content-to-print');
+            const slides = document.querySelectorAll('.slide');
+            
+            slides.forEach(s => s.style.display = 'block');
+            alert("Preparando seu guia de UI/UX... O processo pode levar alguns segundos.");
+
+            html2canvas(content).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 190;
+                const pageHeight = 295;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 10;
+
+                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                doc.save('TCC_UIUX_FrontEnd_META.pdf');
+                updateNavigation();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "ArrowRight") changeSlide(1);
+            if (e.key === "ArrowLeft") changeSlide(-1);
+        });
+
+        // Init
+        updateNavigation();
+    </script>
+</body>
+</html>

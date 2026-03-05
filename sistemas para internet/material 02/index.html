@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material de Estudo: HTTP & API Design - META</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .slide { display: none; min-height: 60vh; }
+        .slide.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-bar { transition: width 0.3s ease; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <img src="logo.png" alt="Logo META" class="h-10 w-auto object-contain">                
+            </div>
+            <div class="text-sm font-medium text-gray-500">
+                Laboratório de Aplicações para Web
+            </div>
+        </div>
+        <div class="w-full bg-gray-200 h-1">
+            <div id="progressBar" class="progress-bar bg-blue-600 h-1 w-0"></div>
+        </div>
+    </header>
+
+    <main id="content-to-print" class="max-w-4xl mx-auto px-4 py-12">
+        
+        <!-- SLIDE 1: Capa -->
+        <section class="slide active" data-index="1">
+            <div class="text-center py-20">
+                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Material 02</span>
+                <h1 class="text-5xl font-extrabold mt-6 text-gray-900 leading-tight">Protocolo HTTP & <br><span class="text-blue-600">API Design Prático</span></h1>
+                <p class="text-xl text-gray-600 mt-6 max-w-2xl mx-auto">Um guia autodidata para estruturar as fundações do seu TCC utilizando arquitetura moderna.</p>
+                <div class="mt-10 flex justify-center gap-4">
+                    <div class="flex items-center gap-2 text-sm text-gray-500 italic">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: O Papel do Arquiteto -->
+        <section class="slide" data-index="2">
+            <h2 class="text-3xl font-bold mb-6">O Papel do Arquiteto (Product Owner)</h2>
+            <div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-lg">
+                <p class="text-lg text-blue-900 mb-4 font-semibold">"Olá, Desenvolvedor. Sou seu Product Owner nesta jornada."</p>
+                <p class="text-blue-800">Hoje, não vamos apenas escrever código. Vamos projetar a inteligência por trás do seu TCC. O sucesso de um sistema web depende de quão bem ele se comunica. Sem uma API bem desenhada, seu front-end será mudo e seu back-end será confuso.</p>
+            </div>
+            <div class="mt-8 grid grid-cols-2 gap-4">
+                <div class="p-4 bg-white border rounded shadow-sm">
+                    <h3 class="font-bold text-blue-600">O que faremos?</h3>
+                    <p class="text-sm text-gray-600">Modelar as rotas que sustentarão sua aplicação final.</p>
+                </div>
+                <div class="p-4 bg-white border rounded shadow-sm">
+                    <h3 class="font-bold text-blue-600">Onde chegaremos?</h3>
+                    <p class="text-sm text-gray-600">Um Blueprint (planta baixa) completo da sua API.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: O Ciclo da Web -->
+        <section class="slide" data-index="3">
+            <h2 class="text-3xl font-bold mb-6">1. O Ciclo Requisição-Resposta</h2>
+            <p class="mb-6">O Protocolo HTTP (Hypertext Transfer Protocol) funciona como um diálogo formal entre dois computadores: o <strong>Cliente</strong> (seu Front-end) e o <strong>Servidor</strong> (seu Back-end).</p>
+            <div class="bg-gray-100 p-8 rounded-xl flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center text-white mx-auto mb-2 text-2xl">💻</div>
+                    <span class="font-bold">Cliente</span>
+                    <p class="text-xs text-gray-500">Navegador / Mobile</p>
+                </div>
+                <div class="flex-1 text-center">
+                    <div class="relative w-full border-t-2 border-dashed border-gray-400">
+                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 px-2 text-xs font-bold text-blue-600">REQUEST</span>
+                    </div>
+                    <div class="relative w-full border-t-2 border-dashed border-gray-400 mt-8">
+                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 px-2 text-xs font-bold text-green-600">RESPONSE</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center text-white mx-auto mb-2 text-2xl">☁️</div>
+                    <span class="font-bold">Servidor</span>
+                    <p class="text-xs text-gray-500">Sua API NodeJS</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Anatomia de uma Requisição (URL) -->
+        <section class="slide" data-index="4">
+            <h2 class="text-3xl font-bold mb-6">Anatomia: A URL (Identidade)</h2>
+            <p class="mb-4">Toda requisição começa com um endereço único para o recurso.</p>
+            <div class="bg-black text-green-400 p-6 rounded-lg font-mono text-sm overflow-x-auto">
+                <span class="text-gray-500">https://</span>api.meta.edu.br<span class="text-white">/v1/usuarios</span><span class="text-yellow-400">?ativo=true</span>
+            </div>
+            <ul class="mt-6 space-y-4">
+                <li class="flex items-start gap-3">
+                    <span class="bg-blue-100 text-blue-600 p-1 rounded font-bold">1</span>
+                    <div><strong>Host:</strong> Onde o servidor mora (api.meta.edu.br).</div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="bg-blue-100 text-blue-600 p-1 rounded font-bold">2</span>
+                    <div><strong>Path:</strong> O caminho para o "armário" de dados (/usuarios).</div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="bg-blue-100 text-blue-600 p-1 rounded font-bold">3</span>
+                    <div><strong>Query Params:</strong> Filtros para a busca (?ativo=true).</div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- SLIDE 5: Anatomia: Verbos e Headers -->
+        <section class="slide" data-index="5">
+            <h2 class="text-3xl font-bold mb-6">Anatomia: Verbos e Headers</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="p-5 border rounded-lg bg-white">
+                    <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+                        <span class="text-blue-600">⚡</span> Verbo (Método)
+                    </h3>
+                    <p class="text-sm text-gray-600 italic mb-3">Define a intenção.</p>
+                    <p class="text-sm">Exemplo: "Eu quero BUSCAR algo" ou "Eu quero DELETAR algo".</p>
+                </div>
+                <div class="p-5 border rounded-lg bg-white">
+                    <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+                        <span class="text-purple-600">🔖</span> Headers (Cabeçalhos)
+                    </h3>
+                    <p class="text-sm text-gray-600 italic mb-3">Metadados da mensagem.</p>
+                    <p class="text-sm">Contém tokens de autenticação, tipo de arquivo (JSON) e cookies.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Anatomia: Body (Corpo) -->
+        <section class="slide" data-index="6">
+            <h2 class="text-3xl font-bold mb-6">Anatomia: O Body (Corpo)</h2>
+            <p class="mb-4">Onde a carga pesada é carregada. Usado principalmente em métodos de criação e atualização.</p>
+            <div class="bg-gray-900 text-blue-300 p-6 rounded-lg font-mono text-sm">
+                <div class="text-gray-500">// Exemplo de Body em JSON</div>
+                {<br>
+                &nbsp;&nbsp;"nome": "João Silva",<br>
+                &nbsp;&nbsp;"email": "joao@meta.edu.br",<br>
+                &nbsp;&nbsp;"projeto": "Sistema de Gestão Escolar"<br>
+                }
+            </div>
+            <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 text-sm">
+                <strong>Dica de Arquiteto:</strong> Nunca envie senhas ou dados sensíveis via URL (Query Params). Use sempre o Body com HTTPS!
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Resumo do Ciclo -->
+        <section class="slide" data-index="7">
+            <h2 class="text-3xl font-bold mb-6">Resumo da Fundação</h2>
+            <p>Antes de avançarmos, você deve ter claro:</p>
+            <div class="space-y-4 mt-6">
+                <div class="flex items-center gap-4 p-4 bg-white shadow-sm border rounded">
+                    <div class="w-10 h-10 bg-green-100 text-green-600 rounded flex items-center justify-center font-bold">✓</div>
+                    <p>O <strong>Cliente</strong> pede, o <strong>Servidor</strong> responde.</p>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-white shadow-sm border rounded">
+                    <div class="w-10 h-10 bg-green-100 text-green-600 rounded flex items-center justify-center font-bold">✓</div>
+                    <p>A <strong>URL</strong> localiza o recurso.</p>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-white shadow-sm border rounded">
+                    <div class="w-10 h-10 bg-green-100 text-green-600 rounded flex items-center justify-center font-bold">✓</div>
+                    <p>O <strong>Verbo</strong> diz o que fazer.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: Verbos HTTP e CRUD -->
+        <section class="slide" data-index="8">
+            <h2 class="text-3xl font-bold mb-6">2. Teoria: Verbos HTTP e CRUD</h2>
+            <p class="mb-6">No desenvolvimento de APIs, mapeamos os métodos HTTP para as operações fundamentais de banco de dados (CRUD).</p>
+            <table class="w-full border-collapse border border-gray-200 bg-white shadow-md rounded-lg overflow-hidden">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-4 border text-left">Método</th>
+                        <th class="p-4 border text-left">Ação CRUD</th>
+                        <th class="p-4 border text-left">Exemplo no TCC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="p-4 border font-bold text-blue-600">GET</td>
+                        <td class="p-4 border uppercase">Read</td>
+                        <td class="p-4 border italic">Listar meus usuários.</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 border font-bold text-green-600">POST</td>
+                        <td class="p-4 border uppercase">Create</td>
+                        <td class="p-4 border italic">Cadastrar novo registro.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SLIDE 9: Verbos HTTP (Continuação) -->
+        <section class="slide" data-index="9">
+            <h2 class="text-3xl font-bold mb-6">Verbos HTTP e CRUD (II)</h2>
+            <table class="w-full border-collapse border border-gray-200 bg-white shadow-md rounded-lg overflow-hidden">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-4 border text-left">Método</th>
+                        <th class="p-4 border text-left">Ação CRUD</th>
+                        <th class="p-4 border text-left">Exemplo no TCC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="p-4 border font-bold text-orange-600">PUT / PATCH</td>
+                        <td class="p-4 border uppercase">Update</td>
+                        <td class="p-4 border italic">Editar perfil do usuário.</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 border font-bold text-red-600">DELETE</td>
+                        <td class="p-4 border uppercase">Delete</td>
+                        <td class="p-4 border italic">Remover um registro.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="mt-6 text-sm text-gray-500"><strong>Diferença técnica:</strong> PUT substitui o recurso todo. PATCH altera apenas partes específicas (ex: apenas o e-mail).</p>
+        </section>
+
+        <!-- SLIDE 10: GET em Detalhes -->
+        <section class="slide" data-index="10">
+            <h2 class="text-3xl font-bold mb-6 text-blue-600">Mergulho no GET</h2>
+            <p class="mb-4">O GET deve ser <strong>Idempotente</strong> e <strong>Seguro</strong>.</p>
+            <div class="bg-blue-50 p-6 rounded-lg">
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Não altera o estado do servidor (apenas lê).</li>
+                    <li>Pode ser "cacheado" pelo navegador.</li>
+                    <li>Usado para buscas, listagens e detalhes.</li>
+                </ul>
+            </div>
+            <p class="mt-4 font-mono bg-gray-100 p-2 text-sm">GET /api/v1/relatorios/45</p>
+        </section>
+
+        <!-- SLIDE 11: POST em Detalhes -->
+        <section class="slide" data-index="11">
+            <h2 class="text-3xl font-bold mb-6 text-green-600">Mergulho no POST</h2>
+            <p class="mb-4">O POST cria vida no seu sistema.</p>
+            <div class="bg-green-50 p-6 rounded-lg">
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Altera o estado do servidor (insere no banco).</li>
+                    <li>Exige um Body com os dados.</li>
+                    <li>Não é cacheável por padrão.</li>
+                </ul>
+            </div>
+            <p class="mt-4 font-mono bg-gray-100 p-2 text-sm">POST /api/v1/auth/login</p>
+        </section>
+
+        <!-- SLIDE 12: PUT vs DELETE -->
+        <section class="slide" data-index="12">
+            <h2 class="text-3xl font-bold mb-6">Mergulho no Ciclo de Edição</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="p-4 border rounded bg-orange-50">
+                    <h3 class="font-bold">PUT/PATCH</h3>
+                    <p class="text-sm">Envia o ID na URL e os dados novos no Body.</p>
+                </div>
+                <div class="p-4 border rounded bg-red-50">
+                    <h3 class="font-bold">DELETE</h3>
+                    <p class="text-sm">Envia o ID na URL. O servidor remove o recurso permanentemente.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 13: API Design & Semântica -->
+        <section class="slide" data-index="13">
+            <h2 class="text-3xl font-bold mb-6">3. API Design: Rotas Semânticas</h2>
+            <p class="mb-6">Suas URLs devem representar <strong>substantivos</strong> (Recursos), não verbos.</p>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="p-5 bg-red-100 rounded-lg">
+                    <h3 class="font-bold text-red-700 mb-2">❌ Design Amador</h3>
+                    <ul class="text-sm space-y-1 font-mono">
+                        <li>/get_usuarios</li>
+                        <li>/salvarDadosNoBanco</li>
+                        <li>/delete-user?id=10</li>
+                        <li>/user/edit/5</li>
+                    </ul>
+                </div>
+                <div class="p-5 bg-green-100 rounded-lg">
+                    <h3 class="font-bold text-green-700 mb-2">✅ Design Profissional</h3>
+                    <ul class="text-sm space-y-1 font-mono">
+                        <li>GET /usuarios</li>
+                        <li>POST /usuarios</li>
+                        <li>DELETE /usuarios/10</li>
+                        <li>PATCH /usuarios/5</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 14: Estrutura da URL -->
+        <section class="slide" data-index="14">
+            <h2 class="text-3xl font-bold mb-6">A Estrutura Padrão (Best Practices)</h2>
+            <div class="p-6 bg-white border rounded shadow-md">
+                <p class="font-mono text-xl text-center">/api/v1/{recurso}/{id}</p>
+                <hr class="my-4">
+                <div class="space-y-3 text-sm">
+                    <p><strong>/api:</strong> Identifica que é uma rota de dados, não de páginas HTML.</p>
+                    <p><strong>/v1:</strong> Versionamento. Permite criar a v2 no futuro sem quebrar o app antigo.</p>
+                    <p><strong>/{recurso}:</strong> Sempre no plural (ex: /produtos, /livros).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 15: Status Codes (A Linguagem) -->
+        <section class="slide" data-index="15">
+            <h2 class="text-3xl font-bold mb-6">Status Codes: Como o Servidor fala?</h2>
+            <p class="mb-6">O código de status diz ao front-end o que aconteceu, sem precisar ler o texto da resposta.</p>
+            <div class="space-y-4">
+                <div class="flex gap-4 items-center">
+                    <div class="w-20 font-bold text-green-600 text-xl">2xx</div>
+                    <div class="flex-1 p-3 bg-green-50 rounded"><strong>Sucesso:</strong> Tudo deu certo.</div>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <div class="w-20 font-bold text-orange-600 text-xl">4xx</div>
+                    <div class="flex-1 p-3 bg-orange-50 rounded"><strong>Erro do Cliente:</strong> Você enviou algo errado.</div>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <div class="w-20 font-bold text-red-600 text-xl">5xx</div>
+                    <div class="flex-1 p-3 bg-red-50 rounded"><strong>Erro do Servidor:</strong> O back-end "explodiu".</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 16: Status Codes Favoritos do Arquiteto -->
+        <section class="slide" data-index="16">
+            <h2 class="text-3xl font-bold mb-6">Meus Status Codes Favoritos</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="p-3 border rounded text-center">
+                    <span class="block text-2xl font-bold text-green-600">200</span>
+                    <span class="text-xs uppercase">OK (Sucesso)</span>
+                </div>
+                <div class="p-3 border rounded text-center">
+                    <span class="block text-2xl font-bold text-green-600">201</span>
+                    <span class="text-xs uppercase">Created (Criado)</span>
+                </div>
+                <div class="p-3 border rounded text-center">
+                    <span class="block text-2xl font-bold text-orange-600">400</span>
+                    <span class="text-xs uppercase">Bad Request</span>
+                </div>
+                <div class="p-3 border rounded text-center">
+                    <span class="block text-2xl font-bold text-orange-600">401</span>
+                    <span class="text-xs uppercase">Unauthorized</span>
+                </div>
+                <div class="p-3 border rounded text-center">
+                    <span class="block text-2xl font-bold text-orange-600">404</span>
+                    <span class="text-xs uppercase">Not Found</span>
+                </div>
+                <div class="p-3 border rounded text-center">
+                    <span class="block text-2xl font-bold text-red-600">500</span>
+                    <span class="text-xs uppercase">Server Error</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 17: Melhores Práticas -->
+        <section class="slide" data-index="17">
+            <h2 class="text-3xl font-bold mb-6">Box: Melhores Práticas de Mercado</h2>
+            <div class="bg-gray-800 text-white p-8 rounded-2xl shadow-xl">
+                <h3 class="text-yellow-400 font-bold text-xl mb-4 italic">The Architect's Handbook</h3>
+                <ul class="space-y-4 text-gray-300">
+                    <li class="flex items-center gap-3">
+                        <span class="text-blue-400">⚡</span>
+                        <span>Use <strong>Kebab-case</strong> nas URLs (/meus-pedidos).</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="text-blue-400">⚡</span>
+                        <span>Nunca use extensões de arquivos (.php, .html) na rota.</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="text-blue-400">⚡</span>
+                        <span>Sempre retorne JSON, nunca texto puro ou HTML.</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 18: Workshop Intro -->
+        <section class="slide" data-index="18">
+            <h2 class="text-3xl font-bold mb-6">4. Laboratório Prático: Blueprint do TCC</h2>
+            <p class="text-lg mb-4">Agora é com você, Desenvolvedor. Vamos aplicar o PBL.</p>
+            <div class="p-6 border-2 border-dashed border-blue-300 rounded-lg text-center">
+                <h3 class="font-bold text-blue-600 text-2xl mb-2">Desafio de Engenharia</h3>
+                <p>Mapeie as 5 principais funcionalidades do seu TCC para rotas HTTP reais.</p>
+                <div class="mt-4 flex justify-center gap-4">
+                    <span class="text-sm bg-gray-100 px-3 py-1 rounded">Postman</span>
+                    <span class="text-sm bg-gray-100 px-3 py-1 rounded">Insomnia</span>
+                    <span class="text-sm bg-gray-100 px-3 py-1 rounded">Swagger</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 19: Identificar Funcionalidades -->
+        <section class="slide" data-index="19">
+            <h2 class="text-3xl font-bold mb-6">Passo 1: Identificar Entidades</h2>
+            <p class="mb-4">O que seu sistema gerencia? Pense nos substantivos.</p>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="p-4 bg-white border rounded text-center">Usuários</div>
+                <div class="w-12 h-12 flex items-center justify-center text-gray-400 mx-auto">→</div>
+                <div class="p-4 bg-blue-50 border border-blue-200 rounded text-center font-mono">/usuarios</div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-4 text-center">
+                <div class="p-4 bg-white border rounded">Produtos</div>
+                <div class="w-12 h-12 flex items-center justify-center text-gray-400 mx-auto">→</div>
+                <div class="p-4 bg-blue-50 border border-blue-200 rounded font-mono">/produtos</div>
+            </div>
+            <p class="mt-8 italic text-gray-500 text-sm">Identifique agora as 3 entidades centrais do seu TCC.</p>
+        </section>
+
+        <!-- SLIDE 20: Tabela de Rotas (Exemplo) -->
+        <section class="slide" data-index="20">
+            <h2 class="text-3xl font-bold mb-6">Exemplo de Tabela de Rotas</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm border-collapse border border-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="border p-2">Funcionalidade</th>
+                            <th class="border p-2">Verbo</th>
+                            <th class="border p-2">Rota</th>
+                            <th class="border p-2">Status Sucesso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2">Criar conta</td>
+                            <td class="border p-2 text-green-600 font-bold text-center">POST</td>
+                            <td class="border p-2 font-mono">/usuarios</td>
+                            <td class="border p-2 text-center">201</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Ver detalhes</td>
+                            <td class="border p-2 text-blue-600 font-bold text-center">GET</td>
+                            <td class="border p-2 font-mono">/usuarios/:id</td>
+                            <td class="border p-2 text-center">200</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 21: Tabela para o Aluno -->
+        <section class="slide" data-index="21">
+            <h2 class="text-3xl font-bold mb-4 italic text-blue-600">Seu Blueprint do TCC</h2>
+            <p class="text-sm text-gray-600 mb-6">Preencha mentalmente ou rascunhe as rotas fundamentais do seu projeto acadêmico:</p>
+            <div class="space-y-4">
+                <div class="grid grid-cols-4 gap-2 bg-gray-100 p-2 font-bold text-xs uppercase">
+                    <div>Recurso</div>
+                    <div>Verbo</div>
+                    <div>Caminho (Path)</div>
+                    <div>Status</div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 border-b pb-2">
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 border-b pb-2">
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 border-b pb-2">
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                    <div class="h-8 bg-gray-50 rounded border border-dashed border-gray-300"></div>
+                </div>
+            </div>
+            <p class="mt-4 text-xs text-gray-400">Este será o seu mapa para a próxima aula de Implementação MVC.</p>
+        </section>
+
+        <!-- SLIDE 22: Atividade Lúdica 1 -->
+        <section class="slide" data-index="22">
+            <h2 class="text-3xl font-bold mb-6">5. Desafio: 'O Garçom da API'</h2>
+            <p class="mb-4">Como "Garçom" (API), qual Status Code você entrega nestas situações?</p>
+            <div class="space-y-4">
+                <div class="p-4 bg-white border rounded flex justify-between items-center shadow-sm">
+                    <span>O cliente pediu um prato que não existe no menu.</span>
+                    <button onclick="checkWaiter(404, this)" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 text-sm font-bold">Responder</button>
+                </div>
+                <div class="p-4 bg-white border rounded flex justify-between items-center shadow-sm">
+                    <span>O prato foi preparado com sucesso e entregue.</span>
+                    <button onclick="checkWaiter(200, this)" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 text-sm font-bold">Responder</button>
+                </div>
+                <div class="p-4 bg-white border rounded flex justify-between items-center shadow-sm">
+                    <span>O cliente tentou entrar na cozinha (área restrita).</span>
+                    <button onclick="checkWaiter(401, this)" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 text-sm font-bold">Responder</button>
+                </div>
+            </div>
+            <div id="waiterFeedback" class="mt-4 text-center font-bold"></div>
+        </section>
+
+        <!-- SLIDE 23: Quiz de Verbos -->
+        <section class="slide" data-index="23">
+            <h2 class="text-3xl font-bold mb-6">Quiz de Verbos HTTP</h2>
+            <div class="bg-blue-900 text-white p-6 rounded-lg">
+                <p class="text-xl mb-6">"Trocar a senha do usuário logado"</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="quizVerb('wrong', this)" class="bg-blue-800 p-4 rounded border border-blue-700 hover:bg-blue-700">GET</button>
+                    <button onclick="quizVerb('wrong', this)" class="bg-blue-800 p-4 rounded border border-blue-700 hover:bg-blue-700">POST</button>
+                    <button onclick="quizVerb('correct', this)" class="bg-blue-600 p-4 rounded border border-blue-500 hover:bg-blue-500">PATCH</button>
+                    <button onclick="quizVerb('wrong', this)" class="bg-blue-800 p-4 rounded border border-blue-700 hover:bg-blue-700">DELETE</button>
+                </div>
+                <p id="quizFeedback" class="mt-4 text-center min-h-[24px]"></p>
+            </div>
+        </section>
+
+        <!-- SLIDE 24: Cenário de TCC 1 -->
+        <section class="slide" data-index="24">
+            <h2 class="text-3xl font-bold mb-6">Cenário de TCC: Autenticação</h2>
+            <p>Se o seu TCC tem login, como é a rota?</p>
+            <div class="p-6 bg-gray-50 border rounded font-mono text-sm mt-4">
+                <span class="text-green-600 font-bold">POST</span> /api/v1/auth/login<br>
+                <span class="text-gray-500">Payload: { email, senha }</span><br><br>
+                <span class="text-blue-600 font-bold">RES:</span> 200 OK + Token JWT
+            </div>
+            <p class="mt-4 text-sm">Observe que usamos POST porque estamos "Criando" uma sessão (Token).</p>
+        </section>
+
+        <!-- SLIDE 25: Cenário de TCC 2 -->
+        <section class="slide" data-index="25">
+            <h2 class="text-3xl font-bold mb-6">Cenário de TCC: Filtros</h2>
+            <p>Se o seu TCC lista itens (ex: agendamentos), use Query Params:</p>
+            <div class="p-6 bg-gray-50 border rounded font-mono text-sm mt-4">
+                <span class="text-blue-600 font-bold">GET</span> /api/v1/agendamentos<span class="text-red-600 font-bold">?data=2024-12-02</span>
+            </div>
+            <p class="mt-4 text-sm text-gray-500 italic">Isso permite que o front-end carregue apenas o necessário, economizando banda.</p>
+        </section>
+
+        <!-- SLIDE 26: Erros Comuns -->
+        <section class="slide" data-index="26">
+            <h2 class="text-3xl font-bold mb-6 text-red-600">Evite estes Erros Críticos!</h2>
+            <ul class="space-y-4">
+                <li class="bg-white p-4 border rounded shadow-sm">
+                    <strong>1. Erro 200 Fake:</strong> Retornar status 200 com uma mensagem de erro no JSON ("erro": "senha invalida"). Se houve erro, o status deve ser 4xx!
+                </li>
+                <li class="bg-white p-4 border rounded shadow-sm">
+                    <strong>2. Verbos errados:</strong> Usar GET para deletar registros (pode ser executado por crawlers do Google!).
+                </li>
+            </ul>
+        </section>
+
+        <!-- SLIDE 27: Documentação Prática -->
+        <section class="slide" data-index="27">
+            <h2 class="text-3xl font-bold mb-6">Documentação Prática</h2>
+            <p class="mb-4">Nenhum desenvolvedor trabalha sozinho. Recomendo estas ferramentas para seu TCC:</p>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="p-4 border rounded text-center">
+                    <div class="font-bold text-orange-600">Postman</div>
+                    <div class="text-xs text-gray-500">Testes Manuais</div>
+                </div>
+                <div class="p-4 border rounded text-center">
+                    <div class="font-bold text-blue-600">Swagger</div>
+                    <div class="text-xs text-gray-500">Auto-documentação</div>
+                </div>
+                <div class="p-4 border rounded text-center">
+                    <div class="font-bold text-purple-600">Insomnia</div>
+                    <div class="text-xs text-gray-500">Minimalista</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 28: Próxima Aula (MVC) -->
+        <section class="slide" data-index="28">
+            <h2 class="text-3xl font-bold mb-6">6. Próximos Passos (19/02)</h2>
+            <div class="bg-gray-100 p-8 rounded-xl text-center">
+                <h3 class="text-2xl font-bold mb-4">Rumo ao MVC</h3>
+                <p>Na próxima semana, transformaremos essas rotas em pastas e arquivos organizados utilizando o padrão <strong>Model-View-Controller</strong>.</p>
+                <div class="flex justify-center gap-2 mt-6">
+                    <span class="bg-blue-600 text-white px-3 py-1 rounded text-xs">Routes</span>
+                    <span class="bg-blue-600 text-white px-3 py-1 rounded text-xs">Controllers</span>
+                    <span class="bg-blue-600 text-white px-3 py-1 rounded text-xs">Models</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 29: Referências -->
+        <section class="slide" data-index="29">
+            <h2 class="text-3xl font-bold mb-6">Referências de Estudo</h2>
+            <div class="space-y-4">
+                <div class="p-4 border rounded flex items-center gap-4">
+                    <div class="text-3xl">📚</div>
+                    <div>
+                        <p class="font-bold">MORAES, P.</p>
+                        <p class="text-sm text-gray-600">Construindo aplicações com NodeJS. Editora Casa do Código.</p>
+                    </div>
+                </div>
+                <div class="p-4 border rounded flex items-center gap-4">
+                    <div class="text-3xl">🌐</div>
+                    <div>
+                        <p class="font-bold">MDN Web Docs</p>
+                        <p class="text-sm text-gray-600">Documentação técnica oficial sobre HTTP Verbs e Status Codes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center p-6 bg-green-50 rounded-lg">
+                <p class="font-bold text-green-700">Dica: Versionem seus Blueprints de API no GitHub do TCC!</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 30: Conclusão -->
+        <section class="slide" data-index="30">
+            <div class="text-center py-20">
+                <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white mx-auto mb-6 text-3xl">✓</div>
+                <h2 class="text-4xl font-bold mb-4 text-gray-900">Missão Cumprida!</h2>
+                <p class="text-lg text-gray-600 mb-10">Você agora tem os fundamentos para desenhar a alma da sua aplicação.</p>
+                
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                    <button onclick="downloadPDF()" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition">
+                        Baixar Guia em PDF
+                    </button>
+                    <button onclick="location.reload()" class="bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
+                        Reiniciar Estudo
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navegação -->
+        <div class="mt-12 flex items-center justify-between border-t pt-8">
+            <button id="prevBtn" onclick="changeSlide(-1)" class="flex items-center gap-2 text-gray-500 hover:text-blue-600 font-semibold disabled:opacity-0 transition">
+                <span>← Anterior</span>
+            </button>
+            <div class="text-sm font-bold text-gray-400">
+                Página <span id="currentPage">1</span> de 30
+            </div>
+            <button id="nextBtn" onclick="changeSlide(1)" class="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition">
+                <span>Próximo →</span>
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t mt-20 py-10">
+        <div class="max-w-5xl mx-auto px-4 text-center text-gray-400 text-xs">
+            © 2026 Centro Universitário META | Laboratório de Aplicações para Web | Prof. Weslyn Figueiredo
+        </div>
+    </footer>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 30;
+
+        function updateNavigation() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(s => s.classList.remove('active'));
+            document.querySelector(`.slide[data-index="${currentSlide}"]`).classList.add('active');
+            
+            document.getElementById('currentPage').innerText = currentSlide;
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').style.display = currentSlide === totalSlides ? 'none' : 'flex';
+            
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            if (currentSlide < 1) currentSlide = 1;
+            if (currentSlide > totalSlides) currentSlide = totalSlides;
+            updateNavigation();
+        }
+
+        // Funções da Atividade Interativa
+        function checkWaiter(code, btn) {
+            const feedback = document.getElementById('waiterFeedback');
+            if(code === 404 || code === 200 || code === 401) {
+                feedback.innerText = "Correto! Código " + code;
+                feedback.className = "mt-4 text-center font-bold text-green-600";
+            }
+            btn.classList.add('bg-blue-100', 'text-blue-600');
+        }
+
+        function quizVerb(status, btn) {
+            const feedback = document.getElementById('quizFeedback');
+            if(status === 'correct') {
+                feedback.innerText = "Excelente! PATCH é o mais semântico para atualizações parciais como troca de senha.";
+                feedback.className = "mt-4 text-center text-green-400 font-bold";
+            } else {
+                feedback.innerText = "Tente novamente. Pense no ciclo CRUD.";
+                feedback.className = "mt-4 text-center text-red-400 font-bold";
+            }
+        }
+
+        // Exportação para PDF
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const content = document.getElementById('content-to-print');
+            
+            // Simula visualização de todos os slides para o print (gambiarra técnica para ambiente de aula)
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(s => s.style.display = 'block');
+            
+            alert("Gerando seu guia de estudo... Aguarde um momento.");
+
+            html2canvas(content).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 190;
+                const pageHeight = 295;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 10;
+
+                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                doc.save('TCC_API_Design_Material.pdf');
+                
+                // Restaura a visualização de slides
+                updateNavigation();
+            });
+        }
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "ArrowRight") changeSlide(1);
+            if (e.key === "ArrowLeft") changeSlide(-1);
+        });
+    </script>
+</body>
+</html>

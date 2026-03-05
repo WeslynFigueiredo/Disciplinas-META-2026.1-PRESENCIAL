@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório de Aplicações para Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --accent-color: #e74c3c;
+            --dark-bg: #1a1a2e;
+            --light-bg: #f8f9fa;
+            --text-dark: #1e272e;
+            --text-light: #2d3436;
+            --text-muted: #57606f;
+            --border-color: #dee2e6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #16213e 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+            border-bottom: 4px solid var(--primary-color);
+            margin-bottom: 40px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Slides Container */
+        .slides-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            min-height: 700px;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide h2 {
+            color: var(--text-dark);
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            border-left: 6px solid var(--secondary-color);
+            padding-left: 25px;
+            font-weight: 700;
+        }
+
+        .slide h3 {
+            color: var(--text-dark);
+            font-size: 1.5em;
+            margin: 30px 0 18px 0;
+            font-weight: 600;
+        }
+
+        .slide h4 {
+            color: var(--primary-color);
+            font-size: 1.3em;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .slide strong {
+            color: var(--text-dark);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 25px;
+            margin-bottom: 35px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 25px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary-color);
+            transition: all 0.3s ease;
+            border: 1px solid #e1e8ed;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h4 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 1.25em;
+        }
+
+        .card p {
+            font-size: 1em;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            border-left: 5px solid var(--secondary-color);
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+
+        .code-comment {
+            color: #a0aec0;
+        }
+
+        /* Architecture Diagram */
+        .architecture-diagram {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 35px 0;
+        }
+
+        .arch-box {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4);
+            position: relative;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .arch-box:hover {
+            transform: scale(1.05);
+        }
+
+        .arch-box h4 {
+            font-size: 1.4em;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+
+        .arch-box p {
+            font-size: 1em;
+            opacity: 0.95;
+        }
+
+        /* Activity Box */
+        .activity-box {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 3px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-box::before {
+            content: '🎯';
+            position: absolute;
+            font-size: 2em;
+            top: 20px;
+            right: 25px;
+            opacity: 0.1;
+        }
+
+        .activity-box h3 {
+            color: var(--accent-color);
+            margin: 0 0 20px 0;
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+
+        /* Tables */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            font-size: 1em;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        .comparison-table td {
+            padding: 18px 15px;
+            border-bottom: 1px solid #e9ecef;
+            color: var(--text-light);
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-family: inherit;
+        }
+
+        .btn-nav {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            flex: 1;
+            min-width: 160px;
+            max-width: 200px;
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-nav:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid;
+            font-size: 1.05em;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--secondary-color);
+            color: #155724;
+        }
+
+        .alert-info {
+            background: #cce7ff;
+            border-color: var(--primary-color);
+            color: #004085;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: var(--accent-color);
+            color: #856404;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            header h1 {
+                font-size: 2.2em;
+            }
+            
+            .slides-container {
+                padding: 25px 20px;
+            }
+            
+            .slide h2 {
+                font-size: 1.8em;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .architecture-diagram {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn-nav {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Laboratório de Aplicações para Web</h1>
+            <p><strong>Material 01</strong><br>Prepare-se para seu TCC com confiança!</p>
+        </header>
+
+        <div class="slides-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 20%"></div>
+            </div>
+
+            <!-- SLIDE 1: Introdução -->
+            <div class="slide active">
+                <h2>👋 Bem-vindo ao Laboratório Web!</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 Objetivo Principal:</strong> Dominar os fundamentos das aplicações web modernas para desenvolver seu TCC com segurança e qualidade profissional.
+                </div>
+
+                <h3>O que você vai dominar:</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🌐 Ecossistema Moderno</h4>
+                        <p>Entenda como funcionam Netflix, Spotify Web e Figma</p>
+                    </div>
+                    <div class="card">
+                        <h4>🏗️ Arquitetura Completa</h4>
+                        <p>Do browser até o banco de dados</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚙️ Stack Tecnológica</h4>
+                        <p>MERN, MEAN, LAMP e muito mais</p>
+                    </div>
+                    <div class="card">
+                        <h4>📋 Planejamento Profissional</h4>
+                        <p>Requisitos, arquitetura e deploy</p>
+                    </div>
+                </div>
+
+                <h4>📊 Roadmap do Curso:</h4>
+                <ul>
+                    <li><strong>Slide 1:</strong> Evolução e conceitos fundamentais</li>
+                    <li><strong>Slide 2:</strong> Arquitetura Cliente-Servidor detalhada</li>
+                    <li><strong>Slide 3:</strong> Protocolos HTTP/HTTPS + JSON</li>
+                    <li><strong>Slide 4:</strong> Bancos de dados relacionais x NoSQL</li>
+                    <li><strong>Slide 5:</strong> Escolha de Stack + Hands-on</li>
+                </ul>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>⏱️ Duração Total</h4>
+                        <p><strong>90 minutos</strong> de conteúdo interativo</p>
+                    </div>
+                    <div class="card">
+                        <h4>🏆 Certificado</h4>
+                        <p>5 atividades práticas + quiz final</p>
+                    </div>
+                    <div class="card">
+                        <h4>💻 Hands-on</h4>
+                        <p>Projeto prático comentado</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: Evolução da Web -->
+            <div class="slide">
+                <h2>📈 A Evolução Completa da Web</h2>
+
+                <h3>Web 1.0 → Web 5.0: Timeline Completa</h3>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Era</th>
+                            <th>Período</th>
+                            <th>Características</th>
+                            <th>Exemplos</th>
+                            <th>Arquitetura</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Web 1.0</strong></td>
+                            <td>1990-2004</td>
+                            <td>HTML estático<br>Read-only<br>Páginas completas</td>
+                            <td>Wikipedia inicial<br>Google 1998</td>
+                            <td>HTML → Browser</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Web 2.0</strong></td>
+                            <td>2004-2014</td>
+                            <td>AJAX<br>Interatividade<br>Read-Write</td>
+                            <td>Gmail, Facebook<br>YouTube</td>
+                            <td>HTML+JS → AJAX → Server</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Web 3.0</strong></td>
+                            <td>2015-2022</td>
+                            <td>SPAs<br>APIs REST<br>JSON only</td>
+                            <td>Netflix, Spotify Web<br>Figma</td>
+                            <td>JS Framework → API → DB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Web 4.0/5.0</strong></td>
+                            <td>2023-hoje</td>
+                            <td>AI nativa<br>Edge computing<br>PWAs</td>
+                            <td>ChatGPT Web<br>Vercel Edge</td>
+                            <td>AI+JS → Edge → Blockchain?</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-success">
+                    <strong>💡 Insight Fundamental:</strong> Toda aplicação web moderna é um <strong>SPA (Single Page Application)</strong> que troca apenas <strong>JSON</strong> com APIs REST.
+                </div>
+
+                <h4>Por que isso importa para seu TCC?</h4>
+                <ul>
+                    <li><strong>95% dos projetos acadêmicos</strong> usam essa arquitetura</li>
+                    <li><strong>Empresas exigem</strong> conhecimento de APIs REST + React/Vue</li>
+                    <li><strong>Deploy fácil</strong> em Vercel/Netlify (5 minutos)</li>
+                </ul>
+            </div>
+
+            <!-- SLIDE 3: Arquitetura Cliente-Servidor -->
+            <div class="slide">
+                <h2>🏗️ Arquitetura Cliente-Servidor Completa</h2>
+
+                <div class="architecture-diagram">
+                    <div class="arch-box">
+                        <h4>🌐 CLIENTE (Browser)</h4>
+                        <p><strong>React/Vue/Angular</strong><br>HTML + CSS + JS<br>State Management</p>
+                    </div>
+                    <div class="arch-box">
+                        <h4>🔌 API (Servidor)</h4>
+                        <p><strong>Node.js/Express</strong><br>ou <strong>Python/FastAPI</strong><br>Autenticação + Lógica</p>
+                    </div>
+                    <div class="arch-box">
+                        <h4>🗄️ DATABASE</h4>
+                        <p><strong>PostgreSQL</strong> ou <strong>MongoDB</strong><br>CRUD operations<br>Relacionamentos</p>
+                    </div>
+                </div>
+
+                <h3>Fluxo Completo de uma Aplicação:</h3>
+                
+                <div class="code-block">
+<span class="code-comment">// 1. Browser carrega index.html (React/Vue SPA)</span>
+<span class="code-comment">// 2. Componente faz fetch para API</span>
+fetch('/api/users', {{
+  headers: {{ 'Authorization': 'Bearer token' }}
+}})
+.then(res => res.json())
+.then(users => setUsers(users))
+<span class="code-comment">// 3. API processa → consulta DB → retorna JSON</span>
+<span class="code-comment">// 4. React atualiza UI automaticamente</span>
+                </div>
+
+                <h4>🛠️ Componentes Essenciais:</h4>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🔐 Autenticação JWT</h4>
+                        <p>Login seguro + tokens</p>
+                    </div>
+                    <div class="card">
+                        <h4>📡 WebSockets (opcional)</h4>
+                        <p>Real-time chat/notificações</p>
+                    </div>
+                    <div class="card">
+                        <h4>🚀 Cache/CDN</h4>
+                        <p>Vercel, Cloudflare</p>
+                    </div>
+                </div>
+
+                <div class="activity-box">
+                    <h3>🎮 Atividade Prática 1</h3>
+                    <p><strong>Desafio:</strong> Identifique os 3 componentes da arquitetura em <a href="https://web.spotify.com" target="_blank">Spotify Web</a></p>
+                    <p><strong>Perguntas:</strong></p>
+                    <ul>
+                        <li>Onde fica o React/Vue? (F12 → Elements)</li>
+                        <li>Quais requisições JSON? (F12 → Network)</li>
+                        <li>Qual banco suspeita? (PostgreSQL/MongoDB)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: Protocolos e Tecnologias -->
+            <div class="slide">
+                <h2>⚙️ Protocolos e Tecnologias Essenciais</h2>
+
+                <h3>HTTP/HTTPS → REST APIs</h3>
+                <div class="code-block">
+<span class="code-comment">// GET - Buscar dados</span>
+GET /api/users
+<span class="code-comment">// POST - Criar</span>
+POST /api/users { "name": "João", "email": "joao@email.com" }
+<span class="code-comment">// PUT - Atualizar</span>
+PUT /api/users/123 { "name": "João Silva" }
+<span class="code-comment">// DELETE - Remover</span>
+DELETE /api/users/123
+                </div>
+
+                <h3>📦 JSON: O coração das APIs</h3>
+                <div class="code-block">
+{{
+  "user": {{
+    "id": 123,
+    "name": "João Silva",
+    "email": "joao@email.com",
+    "posts": [
+      {{ "id": 1, "title": "Meu TCC" }},
+      {{ "id": 2, "title": "Web Moderna" }}
+    ]
+  }}
+}}
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Erro Comum:</strong> Não confunda <code>POST /users</code> (cria novo) com <code>GET /users</code> (lista todos).
+                </div>
+
+                <h4>🔥 Tech Stack Recomendada para TCC:</h4>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>⭐ MERN (Mais Popular)</h4>
+                        <p>MongoDB + Express + React + Node.js</p>
+                    </div>
+                    <div class="card">
+                        <h4>⭐ Next.js 15 (Recomendado)</h4>
+                        <p>React + TypeScript + Vercel<br>Full-stack em 1 projeto</p>
+                    </div>
+                    <div class="card">
+                        <h4>⭐ T3 Stack (Moderno)</h4>
+                        <p>tRPC + Tailwind + TypeScript + Prisma + Next.js</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-nav" onclick="previousSlide()">⬅️ Anterior</button>
+            <button class="btn-nav" onclick="nextSlide()" id="nextBtn">Próximo ➡️</button>
+        </div>
+
+        <div class="slide-counter" id="slideCounter">
+            Slide 1 de 5
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 4; // Atualizar conforme novos slides
+
+        const slides = document.querySelectorAll('.slide');
+        const progressFill = document.getElementById('progressFill');
+        const slideCounter = document.getElementById('slideCounter');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressFill.style.width = progress + '%';
+            slideCounter.textContent = `Slide ${currentSlide + 1} de ${totalSlides}`;
+            
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+    </script>
+</body>
+</html>

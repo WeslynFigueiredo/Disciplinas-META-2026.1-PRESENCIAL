@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material de Estudo: Padrão MVC & Arquitetura - META</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .slide { display: none; min-height: 60vh; }
+        .slide.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-bar { transition: width 0.3s ease; }
+        .folder-tree ul { list-style-type: none; padding-left: 20px; }
+        .folder-tree li { position: relative; padding: 5px 0; }
+        .folder-tree li::before { content: ""; position: absolute; left: -15px; top: 12px; width: 10px; height: 1px; background: #cbd5e1; }
+        .folder-tree li::after { content: ""; position: absolute; left: -15px; top: 0; width: 1px; height: 100%; background: #cbd5e1; }
+        .folder-tree li:last-child::after { height: 13px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <img src="logo.png" alt="Logo META" class="h-10 w-auto object-contain">                
+            </div>
+            <div class="text-sm font-medium text-gray-500">
+                Lab. Web | Material 03            </div>
+        </div>
+        <div class="w-full bg-gray-200 h-1">
+            <div id="progressBar" class="progress-bar bg-blue-600 h-1 w-0"></div>
+        </div>
+    </header>
+
+    <main id="content-to-print" class="max-w-4xl mx-auto px-4 py-12">
+        
+        <!-- SLIDE 1: Capa -->
+        <section class="slide active" data-index="1">
+            <div class="text-center py-20">
+                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Material 03</span>
+                <h1 class="text-5xl font-extrabold mt-6 text-gray-900 leading-tight">Arquitetura em Camadas & <br><span class="text-blue-600">Padrão MVC</span></h1>
+                <p class="text-xl text-gray-600 mt-6 max-w-2xl mx-auto">Organizando o código do seu TCC para escalabilidade, manutenibilidade e aprovação na banca.</p>
+                <div class="mt-10 flex justify-center gap-4">
+                    <div class="flex items-center gap-2 text-sm text-gray-500 italic">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: Por que Organizar? -->
+        <section class="slide" data-index="2">
+            <h2 class="text-3xl font-bold mb-6 italic text-blue-600">Por que Organizar?</h2>
+            <p class="mb-4">Desenvolvedor, imagine apresentar seu TCC e a banca pedir para alterar uma regra de negócio simples. Se seu código for um <strong>"Código Espaguete"</strong>, essa alteração pode quebrar todo o sistema.</p>
+            <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg mb-6">
+                <h3 class="font-bold text-red-800">O Problema do Código Desorganizado:</h3>
+                <ul class="list-disc pl-5 text-red-700 space-y-2 mt-2">
+                    <li>Dificulta a correção de bugs (onde está o erro?).</li>
+                    <li>Impede o crescimento do sistema.</li>
+                    <li>Causa má impressão técnica na banca examinadora.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: O Código para a Banca -->
+        <section class="slide" data-index="3">
+            <h2 class="text-3xl font-bold mb-6">O Código para a Banca Examinadora</h2>
+            <p class="mb-6">A banca não avalia apenas se o botão funciona. Eles avaliam a sua <strong>maturidade como engenheiro</strong>.</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-white border rounded shadow-sm text-center">
+                    <div class="text-3xl mb-2">📁</div>
+                    <h4 class="font-bold">Estrutura Clara</h4>
+                    <p class="text-xs text-gray-500">Arquivos no lugar certo demonstram domínio arquitetural.</p>
+                </div>
+                <div class="p-4 bg-white border rounded shadow-sm text-center">
+                    <div class="text-3xl mb-2">🧩</div>
+                    <h4 class="font-bold">Separação</h4>
+                    <p class="text-xs text-gray-500">Lógica de banco não deve se misturar com design HTML.</p>
+                </div>
+            </div>
+            <div class="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded text-sm italic">
+                <strong>Dica para a Banca:</strong> "Neste projeto, optei pelo padrão MVC para isolar as responsabilidades, permitindo que a interface mude sem afetar as regras de negócio."
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Objetivo da Aula -->
+        <section class="slide" data-index="4">
+            <h2 class="text-3xl font-bold mb-6">Objetivo de Hoje</h2>
+            <div class="flex items-center gap-6 bg-blue-900 text-white p-8 rounded-2xl">
+                <div class="text-5xl">🎯</div>
+                <div>
+                    <p class="text-lg opacity-80">Nossa missão acadêmica:</p>
+                    <p class="text-2xl font-bold">Separar as responsabilidades do sistema em camadas lógicas.</p>
+                </div>
+            </div>
+            <p class="mt-8 text-gray-600">Vamos sair da "bagunça de um arquivo só" para uma arquitetura profissional.</p>
+        </section>
+
+        <!-- SLIDE 5: Teoria: O que é MVC? -->
+        <section class="slide" data-index="5">
+            <h2 class="text-3xl font-bold mb-6">2. Teoria: O Padrão MVC</h2>
+            <p class="mb-4">O MVC é um padrão de arquitetura que divide a aplicação em três componentes principais:</p>
+            <div class="grid grid-cols-3 gap-2 mt-8">
+                <div class="p-4 bg-blue-100 border border-blue-200 rounded text-center">
+                    <span class="block font-bold text-blue-800 text-2xl">M</span>
+                    <span class="text-xs font-bold text-blue-600 uppercase">Model</span>
+                </div>
+                <div class="p-4 bg-green-100 border border-green-200 rounded text-center">
+                    <span class="block font-bold text-green-800 text-2xl">V</span>
+                    <span class="text-xs font-bold text-green-600 uppercase">View</span>
+                </div>
+                <div class="p-4 bg-purple-100 border border-purple-200 rounded text-center">
+                    <span class="block font-bold text-purple-800 text-2xl">C</span>
+                    <span class="text-xs font-bold text-purple-600 uppercase">Controller</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: O Componente Model -->
+        <section class="slide" data-index="6">
+            <h2 class="text-3xl font-bold mb-6 text-blue-600">Model (Modelo)</h2>
+            <p class="text-lg font-semibold mb-4">"O Coração dos Dados"</p>
+            <div class="bg-white p-6 border rounded-lg shadow-sm">
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-blue-500">●</span>
+                        Lida diretamente com o Banco de Dados.
+                    </li>
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-blue-500">●</span>
+                        Contém as <strong>Regras de Negócio</strong> (ex: "o saldo não pode ser negativo").
+                    </li>
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-blue-500">●</span>
+                        Define a estrutura dos objetos (Esquemas).
+                    </li>
+                </ul>
+            </div>
+            <div class="mt-6 p-4 bg-gray-900 text-blue-300 font-mono text-xs rounded">
+                // Exemplo: usuarioModel.js<br>
+                const user = { nome: String, email: String };
+            </div>
+        </section>
+
+        <!-- SLIDE 7: O Componente View -->
+        <section class="slide" data-index="7">
+            <h2 class="text-3xl font-bold mb-6 text-green-600">View (Visão)</h2>
+            <p class="text-lg font-semibold mb-4">"O que o Usuário vê"</p>
+            <div class="bg-white p-6 border rounded-lg shadow-sm">
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-green-500">●</span>
+                        Interface do Usuário (HTML, CSS, JSON).
+                    </li>
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-green-500">●</span>
+                        Não deve conter lógica de banco de dados.
+                    </li>
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-green-500">●</span>
+                        Apenas exibe os dados fornecidos pelo Controller.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: O Componente Controller -->
+        <section class="slide" data-index="8">
+            <h2 class="text-3xl font-bold mb-6 text-purple-600">Controller (Controlador)</h2>
+            <p class="text-lg font-semibold mb-4">"O Maestro do Sistema"</p>
+            <div class="bg-white p-6 border rounded-lg shadow-sm">
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-purple-500">●</span>
+                        Intermediário entre View e Model.
+                    </li>
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-purple-500">●</span>
+                        Recebe a <strong>Requisição HTTP</strong>.
+                    </li>
+                    <li class="flex items-center gap-2 text-gray-700">
+                        <span class="text-purple-500">●</span>
+                        Chama o Model, processa os dados e envia para a View.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Fluxo de Comunicação -->
+        <section class="slide" data-index="9">
+            <h2 class="text-3xl font-bold mb-6">O Fluxo da Informação</h2>
+            <div class="flex flex-col items-center gap-4 py-8">
+                <div class="bg-green-100 p-3 rounded border border-green-300 w-40 text-center text-xs font-bold">VIEW (Cliente pede)</div>
+                <div class="text-gray-400">↓</div>
+                <div class="bg-purple-100 p-3 rounded border border-purple-300 w-40 text-center text-xs font-bold">CONTROLLER (Decide)</div>
+                <div class="text-gray-400">↓</div>
+                <div class="bg-blue-100 p-3 rounded border border-blue-300 w-40 text-center text-xs font-bold">MODEL (Busca Dados)</div>
+                <div class="text-gray-400">↑</div>
+                <div class="bg-purple-100 p-3 rounded border border-purple-300 w-40 text-center text-xs font-bold">CONTROLLER (Prepara)</div>
+                <div class="text-gray-400">↓</div>
+                <div class="bg-green-100 p-3 rounded border border-green-300 w-40 text-center text-xs font-bold">VIEW (Usuário recebe)</div>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: Vantagens da Divisão -->
+        <section class="slide" data-index="10">
+            <h2 class="text-3xl font-bold mb-6">Vantagens Arquiteturais</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="p-4 border-l-4 border-blue-500 bg-white shadow-sm">
+                    <h4 class="font-bold">Manutenibilidade</h4>
+                    <p class="text-xs">Mudar o banco de dados afeta apenas a pasta <strong>/models</strong>.</p>
+                </div>
+                <div class="p-4 border-l-4 border-green-500 bg-white shadow-sm">
+                    <h4 class="font-bold">Flexibilidade</h4>
+                    <p class="text-xs">Mudar o layout (Tailwind para Bootstrap) afeta apenas <strong>/views</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: Prática: Árvore de Diretórios -->
+        <section class="slide" data-index="11">
+            <h2 class="text-3xl font-bold mb-6">3. Estruturação das Pastas (Node.js)</h2>
+            <p class="mb-4 text-sm">Crie a seguinte hierarquia no diretório <strong>/src</strong> do seu projeto:</p>
+            <div class="bg-gray-800 text-white p-6 rounded-lg font-mono text-sm folder-tree">
+                <ul>
+                    <li>📁 src
+                        <ul>
+                            <li>📁 config <span class="text-gray-500 text-xs">// Conexão BD</span></li>
+                            <li>📁 controllers <span class="text-gray-500 text-xs">// Lógica das rotas</span></li>
+                            <li>📁 models <span class="text-gray-500 text-xs">// Entidades e DB</span></li>
+                            <li>📁 views <span class="text-gray-500 text-xs">// Front-end</span></li>
+                            <li>📁 routes <span class="text-gray-500 text-xs">// Definição das URLs</span></li>
+                            <li>📄 app.js <span class="text-gray-500 text-xs">// Ponto de entrada</span></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 12: Detalhando /routes -->
+        <section class="slide" data-index="12">
+            <h2 class="text-3xl font-bold mb-6">Pasta /routes</h2>
+            <p class="mb-4">Aqui ficam os arquivos que você planejou na aula anterior (12/02).</p>
+            <div class="p-4 bg-gray-50 border rounded font-mono text-xs">
+                // routes/userRoutes.js<br>
+                router.get('/usuarios', userController.listar);
+            </div>
+            <p class="mt-4 text-sm text-gray-500 italic">Cada arquivo de rota deve delegar a execução para um controlador correspondente.</p>
+        </section>
+
+        <!-- SLIDE 13: Detalhando /controllers -->
+        <section class="slide" data-index="13">
+            <h2 class="text-3xl font-bold mb-6">Pasta /controllers</h2>
+            <p class="mb-4">Onde a mágica do processamento acontece.</p>
+            <div class="p-4 bg-gray-50 border rounded font-mono text-xs">
+                // controllers/userController.js<br>
+                exports.listar = (req, res) => { ... };
+            </div>
+            <p class="mt-4 text-sm">O controlador não pergunta ao banco de dados diretamente; ele pede ao Model.</p>
+        </section>
+
+        <!-- SLIDE 14: Detalhando /models -->
+        <section class="slide" data-index="14">
+            <h2 class="text-3xl font-bold mb-6">Pasta /models</h2>
+            <p class="mb-4">Contém as definições de como os dados são salvos.</p>
+            <div class="p-4 bg-gray-50 border rounded font-mono text-xs">
+                // models/userModel.js<br>
+                const UserSchema = new Schema({ ... });
+            </div>
+        </section>
+
+        <!-- SLIDE 15: Detalhando /config -->
+        <section class="slide" data-index="15">
+            <h2 class="text-3xl font-bold mb-6">Pasta /config</h2>
+            <p class="mb-4">Segurança e Infraestrutura.</p>
+            <div class="bg-blue-50 p-6 rounded border border-blue-200">
+                <p class="text-sm">Guarde aqui as credenciais do banco de dados e chaves de API secretas. Utilize arquivos <strong>.env</strong> para não expor senhas no GitHub!</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 16: Template de Controller (O Presente) -->
+        <section class="slide" data-index="16">
+            <h2 class="text-3xl font-bold mb-6 text-purple-600">Template Inicial de Controller</h2>
+            <p class="mb-4 text-sm">Utilize este template para criar seus controladores iniciais no TCC:</p>
+            <div class="bg-gray-900 text-blue-300 p-6 rounded-lg font-mono text-xs overflow-x-auto">
+<pre>
+// src/controllers/genericController.js
+
+exports.getAll = async (req, res) => {
+    try {
+        // 1. Chamar o Model para buscar dados
+        // const data = await Model.find();
+        
+        // 2. Responder com sucesso
+        res.status(200).json({
+            status: "success",
+            results: 1,
+            data: { message: "Dados recuperados com sucesso" }
+        });
+    } catch (err) {
+        // 3. Responder erro (Status 400 ou 500)
+        res.status(400).json({ status: "fail", message: err });
+    }
+};
+</pre>
+            </div>
+        </section>
+
+        <!-- SLIDE 17: Conectando Rota -> Controller -->
+        <section class="slide" data-index="17">
+            <h2 class="text-3xl font-bold mb-6">O Elo: Rota chamando Controller</h2>
+            <p class="mb-4">Como as peças se encaixam:</p>
+            <div class="space-y-4">
+                <div class="p-3 bg-gray-100 border rounded font-mono text-xs">
+                    <span class="text-gray-400">// userRoutes.js</span><br>
+                    const userController = require('../controllers/userController');<br>
+                    router.get('/perfil', userController.getPerfil);
+                </div>
+                <div class="text-center text-blue-600 font-bold">↑ ↓</div>
+                <div class="p-3 bg-gray-100 border rounded font-mono text-xs">
+                    <span class="text-gray-400">// userController.js</span><br>
+                    exports.getPerfil = (req, res) => { ... };
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 18: Workshop PBL: Mão na Massa -->
+        <section class="slide" data-index="18">
+            <h2 class="text-3xl font-bold mb-6">4. Workshop PBL: Aplicando ao seu TCC</h2>
+            <p class="mb-6">Abra seu VS Code e seu repositório Git. Chegou a hora de estruturar a "casinha" do seu projeto.</p>
+            <div class="bg-blue-50 border-2 border-dashed border-blue-400 p-6 rounded text-center">
+                <h3 class="font-bold text-blue-800 text-xl mb-2">TAREFA DE HOJE</h3>
+                <p class="text-sm mb-4">Criar as pastas /models, /views, /controllers, /routes e /config no seu repositório.</p>
+                <div class="bg-white p-4 rounded text-left text-xs font-mono">
+                    mkdir src src/models src/views src/controllers src/routes src/config
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 19: Desafio do Primeiro Fluxo -->
+        <section class="slide" data-index="19">
+            <h2 class="text-3xl font-bold mb-6">Desafio: O Primeiro Fluxo</h2>
+            <p class="mb-4">Não tente fazer tudo hoje. Escolha uma funcionalidade simples:</p>
+            <div class="p-4 bg-white border rounded shadow-sm">
+                <h4 class="font-bold text-blue-600">Funcionalidade: "Lista de Usuários"</h4>
+                <p class="text-sm text-gray-600 mt-2">1. Crie a rota GET /usuarios.<br>2. Crie o controlador que retorna um JSON de teste.<br>3. Teste no navegador ou Insomnia.</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 20: Dica para a Banca (Arquitetura) -->
+        <section class="slide" data-index="20">
+            <h2 class="text-3xl font-bold mb-6">Box: Dica para a Banca</h2>
+            <div class="bg-yellow-100 p-8 rounded-2xl border border-yellow-300">
+                <h3 class="text-yellow-800 font-bold text-xl mb-4">Como defender sua arquitetura:</h3>
+                <p class="text-yellow-900 mb-4 italic">"Membros da banca, o sistema foi construído sobre o padrão arquitetural MVC para garantir o Princípio da Responsabilidade Única (SRP). Isso facilita a manutenção futura e permite que possamos trocar o motor de visualização sem alterar a integridade dos dados."</p>
+                <p class="text-xs text-yellow-700"><strong>Dica:</strong> Se você falar "Princípio da Responsabilidade Única", ganhará pontos extras de maturidade técnica.</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 21: Atividade Lúdica: Onde Coloco Isso? -->
+        <section class="slide" data-index="21">
+            <h2 class="text-3xl font-bold mb-6">5. Jogo: 'Onde Coloco Isso?'</h2>
+            <p class="mb-6">Arraste mentalmente o código para a pasta correta:</p>
+            <div class="space-y-4">
+                <div class="p-4 bg-white border rounded flex justify-between items-center">
+                    <span class="font-mono text-sm text-blue-700">"validação de e-mail existente"</span>
+                    <div class="flex gap-2">
+                        <button onclick="checkLayer('Model', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">Model</button>
+                        <button onclick="checkLayer('View', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">View</button>
+                        <button onclick="checkLayer('Controller', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">Controller</button>
+                    </div>
+                </div>
+                <div class="p-4 bg-white border rounded flex justify-between items-center">
+                    <span class="font-mono text-sm text-green-700">"&lt;button class='btn'&gt;Salvar&lt;/button&gt;"</span>
+                    <div class="flex gap-2">
+                        <button onclick="checkLayer('Model', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">Model</button>
+                        <button onclick="checkLayer('View', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">View</button>
+                        <button onclick="checkLayer('Controller', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">Controller</button>
+                    </div>
+                </div>
+                <div class="p-4 bg-white border rounded flex justify-between items-center">
+                    <span class="font-mono text-sm text-purple-700">"res.status(200).send(...)"</span>
+                    <div class="flex gap-2">
+                        <button onclick="checkLayer('Model', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">Model</button>
+                        <button onclick="checkLayer('View', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">View</button>
+                        <button onclick="checkLayer('Controller', this)" class="bg-gray-100 px-3 py-1 rounded text-xs hover:bg-blue-100">Controller</button>
+                    </div>
+                </div>
+            </div>
+            <div id="gameFeedback" class="mt-6 text-center font-bold min-h-[24px]"></div>
+        </section>
+
+        <!-- SLIDE 22: Quiz de Manutenibilidade -->
+        <section class="slide" data-index="22">
+            <h2 class="text-3xl font-bold mb-6 text-orange-600">Quiz de Manutenibilidade</h2>
+            <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                <p class="text-lg mb-4">"Se precisarmos mudar o banco de dados de MySQL para MongoDB, qual camada será a mais afetada?"</p>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="quizMaint('err')" class="p-3 bg-white border rounded hover:bg-orange-100 text-left">A) View (Interface)</button>
+                    <button onclick="quizMaint('correct')" class="p-3 bg-white border rounded hover:bg-orange-100 text-left">B) Model (Dados e Lógica)</button>
+                    <button onclick="quizMaint('err')" class="p-3 bg-white border rounded hover:bg-orange-100 text-left">C) Controller (Rotas)</button>
+                </div>
+                <p id="maintFeedback" class="mt-4 text-center font-bold text-sm"></p>
+            </div>
+        </section>
+
+        <!-- SLIDE 23: O que você responde para a banca? -->
+        <section class="slide" data-index="23">
+            <h2 class="text-3xl font-bold mb-6">Simulador de Banca</h2>
+            <p class="mb-4">Pergunta da Banca: "Onde estão as regras de acesso do seu sistema?"</p>
+            <div class="p-4 bg-gray-900 text-green-400 rounded-lg font-mono text-sm">
+                Desenvolvedor: "Estão concentradas nos <strong>Controllers</strong>, que validam a requisição antes de solicitar ao <strong>Model</strong>."
+            </div>
+            <p class="mt-4 text-xs text-gray-500 italic">Resposta perfeita. Demonstra que você sabe quem controla o fluxo.</p>
+        </section>
+
+        <!-- SLIDE 24: Referência de Estrutura Profissional -->
+        <section class="slide" data-index="24">
+            <h2 class="text-3xl font-bold mb-6">Referência: Projeto Real</h2>
+            <p class="mb-4 text-sm">Em grandes empresas (Google, Uber, Nubank), a estrutura é similar, porém com mais camadas:</p>
+            <ul class="space-y-2 text-sm text-gray-600">
+                <li>/services <span class="text-gray-400 italic">(Lógica de negócio complexa)</span></li>
+                <li>/middlewares <span class="text-gray-400 italic">(Segurança e Validação)</span></li>
+                <li>/utils <span class="text-gray-400 italic">(Funções auxiliares)</span></li>
+            </ul>
+        </section>
+
+        <!-- SLIDE 25: Versionamento com Git -->
+        <section class="slide" data-index="25">
+            <h2 class="text-3xl font-bold mb-6">GitHub: Versionando a Arquitetura</h2>
+            <div class="p-6 border rounded bg-white">
+                <p class="text-sm mb-4 font-bold">Ao subir seu TCC hoje, use uma mensagem de commit profissional:</p>
+                <div class="bg-gray-100 p-3 rounded font-mono text-xs">
+                    git commit -m "arch: implement initial MVC directory structure"
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 26: Checkpoint e Dailies -->
+        <section class="slide" data-index="26">
+            <h2 class="text-3xl font-bold mb-6">6. Checkpoint & Dailies</h2>
+            <p class="mb-4">O professor Weslyn atuará como seu **Product Owner (PO)**.</p>
+            <div class="bg-blue-50 p-6 rounded shadow-inner">
+                <p class="font-bold mb-2">Nas próximas aulas:</p>
+                <ul class="text-sm space-y-2">
+                    <li>● Validar se as pastas estão corretas.</li>
+                    <li>● Verificar se a rota X chama o controlador Y.</li>
+                    <li>● Checar se não há HTML misturado com SQL.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SLIDE 27: Próximo Passo: Front-end (26/02) -->
+        <section class="slide" data-index="27">
+            <h2 class="text-3xl font-bold mb-6">Próxima Parada: Front-end</h2>
+            <div class="flex items-center gap-6 py-10">
+                <div class="text-6xl">🎨</div>
+                <div>
+                    <h3 class="text-xl font-bold">26 de Fevereiro: UI/UX no TCC</h3>
+                    <p class="text-gray-600">Com a estrutura pronta, focaremos no que o usuário vê: o Front-end moderno.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 28: Referências Bibliográficas -->
+        <section class="slide" data-index="28">
+            <h2 class="text-3xl font-bold mb-6">Referências Recomendadas</h2>
+            <div class="space-y-4">
+                <div class="p-4 border rounded flex items-center gap-4">
+                    <div class="text-2xl">📘</div>
+                    <div>
+                        <p class="font-bold text-sm">MORAES, P.</p>
+                        <p class="text-xs text-gray-500 italic">Construindo aplicações com NodeJS. Editora Casa do Código.</p>
+                    </div>
+                </div>
+                <div class="p-4 border rounded flex items-center gap-4">
+                    <div class="text-2xl">🖥️</div>
+                    <div>
+                        <p class="font-bold text-sm">Manuais Técnicos AVA</p>
+                        <p class="text-xs text-gray-500 italic">Consulte a seção "Arquitetura Web" no seu portal.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 29: Recado do Professor -->
+        <section class="slide" data-index="29">
+            <h2 class="text-3xl font-bold mb-6">Palavra do Arquiteto</h2>
+            <div class="italic text-gray-700 border-l-4 border-blue-600 pl-6 py-4 bg-white">
+                "O código é passageiro, a arquitetura é eterna. Desenhe seu TCC para ser um orgulho no seu portfólio, não apenas uma nota na AV1."
+            </div>
+        </section>
+
+        <!-- SLIDE 30: Conclusão -->
+        <section class="slide" data-index="30">
+            <div class="text-center py-20">
+                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white mx-auto mb-6 text-3xl">🏛️</div>
+                <h2 class="text-4xl font-bold mb-4 text-gray-900">Arquitetura Implementada!</h2>
+                <p class="text-lg text-gray-600 mb-10">Você organizou o cérebro do seu TCC. Agora ele está pronto para crescer.</p>
+                
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                    <button onclick="downloadPDF()" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition">
+                        Baixar Guia PDF (Aula 03)
+                    </button>
+                    <button onclick="currentSlide=1; updateNavigation();" class="bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
+                        Revisar do Início
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navegação -->
+        <div class="mt-12 flex items-center justify-between border-t pt-8">
+            <button id="prevBtn" onclick="changeSlide(-1)" class="flex items-center gap-2 text-gray-500 hover:text-blue-600 font-semibold disabled:opacity-0 transition">
+                <span>← Anterior</span>
+            </button>
+            <div class="text-sm font-bold text-gray-400">
+                Página <span id="currentPage">1</span> de 30
+            </div>
+            <button id="nextBtn" onclick="changeSlide(1)" class="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition">
+                <span>Próximo →</span>
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t mt-20 py-10">
+        <div class="max-w-5xl mx-auto px-4 text-center text-gray-400 text-xs">
+            © 2026 Centro Universitário META | Laboratório de Aplicações para Web | Prof. Weslyn Figueiredo
+        </div>
+    </footer>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 30;
+
+        function updateNavigation() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(s => s.classList.remove('active'));
+            const activeSlide = document.querySelector(`.slide[data-index="${currentSlide}"]`);
+            if (activeSlide) activeSlide.classList.add('active');
+            
+            document.getElementById('currentPage').innerText = currentSlide;
+            document.getElementById('prevBtn').style.opacity = currentSlide === 1 ? '0' : '1';
+            document.getElementById('nextBtn').style.display = currentSlide === totalSlides ? 'none' : 'flex';
+            
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            if (currentSlide < 1) currentSlide = 1;
+            if (currentSlide > totalSlides) currentSlide = totalSlides;
+            updateNavigation();
+        }
+
+        // Funções do Jogo
+        function checkLayer(expected, btn) {
+            const feedback = document.getElementById('gameFeedback');
+            const codeText = btn.parentElement.parentElement.firstElementChild.innerText;
+            
+            let isCorrect = false;
+            if (codeText.includes('validação') && expected === 'Model') isCorrect = true;
+            if (codeText.includes('button') && expected === 'View') isCorrect = true;
+            if (codeText.includes('res.status') && expected === 'Controller') isCorrect = true;
+
+            if (isCorrect) {
+                feedback.innerText = "Correto! Você tem instinto de Arquiteto!";
+                feedback.className = "mt-6 text-center font-bold text-green-600";
+                btn.className = "bg-green-600 text-white px-3 py-1 rounded text-xs";
+            } else {
+                feedback.innerText = "Tente novamente. Pense na responsabilidade do código.";
+                feedback.className = "mt-6 text-center font-bold text-red-600";
+            }
+        }
+
+        function quizMaint(type) {
+            const feedback = document.getElementById('maintFeedback');
+            if (type === 'correct') {
+                feedback.innerText = "ACERTOU! O Model isola o acesso ao banco. Se o banco muda, a View e o Controller nem ficam sabendo.";
+                feedback.className = "mt-4 text-center font-bold text-green-600 text-sm";
+            } else {
+                feedback.innerText = "Errado. Essa camada não deveria saber qual banco de dados estamos usando.";
+                feedback.className = "mt-4 text-center font-bold text-red-600 text-sm";
+            }
+        }
+
+        // Exportação para PDF
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const content = document.getElementById('content-to-print');
+            const slides = document.querySelectorAll('.slide');
+            
+            slides.forEach(s => s.style.display = 'block');
+            alert("Gerando Guia de Arquitetura... Aguarde.");
+
+            html2canvas(content).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 190;
+                const pageHeight = 295;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 10;
+
+                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                doc.save('TCC_Arquitetura_MVC_META.pdf');
+                updateNavigation();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "ArrowRight") changeSlide(1);
+            if (e.key === "ArrowLeft") changeSlide(-1);
+        });
+
+        // Inicializar barra de progresso
+        updateNavigation();
+    </script>
+</body>
+</html>
